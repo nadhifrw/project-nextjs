@@ -10,7 +10,7 @@ export default async function Navbar() {
       <div className='flex items-center justify-between max-w-4xl mx-auto py-4 text-black'>
         <Link href='/dashboard'>HOME</Link>
         {/* {session ? 'signout':<SignOut /> } */}
-        <SignOut />
+        {/* <SignOut /> */}
       </div>
     </div>
   );

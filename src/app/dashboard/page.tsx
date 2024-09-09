@@ -11,22 +11,11 @@ export default async function Page() {
     }
 
     return (
-    <main className='bg-white text-black'>
-        <Navbar />
-        <div className='flex flex-col'>
-            <Types />
-            <div className=''>
-    
-                <div>
-                    <div>
-
-                    </div>
-                </div>
-            </div>
-            <div>
-                asu
-            </div>
+    <main>
+        <div>
+             this is dashboard
         </div>
+
     </main>
     )
 }

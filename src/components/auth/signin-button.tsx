@@ -8,7 +8,7 @@ export function SignIn() {
 
   const handleSignIn = async () => {
     const result = await signIn("credentials", { redirect: false });
-    if (!result?.error) {
+    if (result?.error) {
       router.push("/dashboard");
     }
   };
