@@ -42,3 +42,33 @@ model User {
   updatedAt DateTime @updatedAt                   // Automatically updated timestamp for when the user was last updated
 
 }
+
+model Departement {
+  id_departemen Int     @id
+  nama          String
+  dosen         Dosen[]
+}
+
+model Dosen {
+  nidn           Int          @id
+  nama           String
+  departemen     Departement   @relation(fields: [id_departemen], references: [id_departemen])
+  id_departemen  Int
+  publikasi      Publikasi[]
+  penelitian     Penelitian[]
+}
+
+model Publikasi {
+  id_data Int      @id
+  judul   String
+  penulis Dosen[]
+  url     String
+}
+
+model Penelitian {
+  id_data Int      @id
+  judul   String
+  penulis Dosen[]
+  tingkat String
+  url     String
+}

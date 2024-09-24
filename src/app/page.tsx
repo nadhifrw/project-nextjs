@@ -29,7 +29,7 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen items-center justify-center p-24 bg-white text-black">
-      <div className="flex flex-row flex-nowrap border-black border-solid border-2">
+      <div className="flex flex-row flex-nowrap border-black border-solid border rounded-sm shadow-xl">
         <div className="m-4">
           <div className="m-4">
             <div className="mb-5 p-4 flex items-center justify-center">
@@ -57,7 +57,7 @@ export default function Home() {
               placeholder="Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="border-black border-solid border m-0.5 pl-2 pt-2 pb-2 pr-8"
+              className="border-black border-solid border rounded-md m-0.5 pl-2 pt-2 pb-2 pr-8"
             />
             <input
               name="password"
@@ -65,12 +65,12 @@ export default function Home() {
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="border-black border-solid border m-0.5 pl-2 pt-2 pb-2 pr-8"
+              className="border-black border-solid border rounded-md m-0.5 pl-2 pt-2 pb-2 pr-8"
             />
             {error && <p className="text-red-500 mt-2">{error}</p>}
             <button
               type="submit"
-              className="bg-black text-white pt-2 pb-2 pr-32 pl-32 mt-4"
+              className="bg-green-500 text-white rounded-md pt-2 pb-2 pr-32 pl-32 mt-4 hover:bg-green-700"
             >
               Masuk
             </button>
