@@ -54,18 +54,19 @@ model Dosen {
   nama           String
   departemen     Departement   @relation(fields: [id_departemen], references: [id_departemen])
   id_departemen  Int
-  publikasi      Publikasi[]
+  Pengabdian     Pengabdian[]
   penelitian     Penelitian[]
 }
 
-model Publikasi {
+model Penelitian {
   id_data Int      @id
   judul   String
   penulis Dosen[]
+  tingkat String
   url     String
 }
 
-model Penelitian {
+model Pengabdian {
   id_data Int      @id
   judul   String
   penulis Dosen[]

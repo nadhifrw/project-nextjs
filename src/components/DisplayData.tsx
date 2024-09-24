@@ -1,25 +1,27 @@
 'use client'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import { ChartConfig, ChartContainer } from "./ui/chart";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "./ui/chart";
 
+// Updated data structure for the last 5 years
+const currentYear = new Date().getFullYear();
 const data = [
-    { day: 'Mon', visits: 120 },
-    { day: 'Tue', visits: 150 },
-    { day: 'Wed', visits: 180 },
-    { day: 'Thu', visits: 200 },
-    { day: 'Fri', visits: 250 },
-    { day: 'Sat', visits: 300 },
-    { day: 'Sun', visits: 280 },
+  { year: currentYear - 4, nasional: 186, internasional: 80 },
+  { year: currentYear - 3, nasional: 305, internasional: 200 },
+  { year: currentYear - 2, nasional: 237, internasional: 120 },
+  { year: currentYear - 1, nasional: 273, internasional: 190 },
+  { year: currentYear, nasional: 309, internasional: 230 },
 ];
 
-const totalVisits = data.reduce((sum, item) => sum + item.visits, 0);
+const totalPengabdian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
+const totalPenelitian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
+const totalDosen = 200;
 
 type DashboardCardChartProps = {
     title: string
     body: string
-    chartData: Array<{ day: string; visits: number }>
+    chartData: Array<{ year: number; nasional: number; internasional: number }>
 }
 
 type DashboardCardDosenProps = {
@@ -28,13 +30,13 @@ type DashboardCardDosenProps = {
 }
 
 const chartConfig = {
-    desktop: {
-      label: "Desktop",
-      color: "#2563eb",
+    nasional: {
+      label: "Nasional",
+      color: "#ccffcc",
     },
-    mobile: {
-      label: "Mobile",
-      color: "#60a5fa",
+    internasional: {
+      label: "Internasional",
+      color: "#64C240",
     },
   } satisfies ChartConfig
 
@@ -54,12 +56,20 @@ function DashboardCardChart({title, body, chartData}: DashboardCardChartProps) {
                     <div className="">
                         <CardContent>
                             <div className="flex">
-                                <ChartContainer config={chartConfig} className="min-h-[200px] w-full" >
+                            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
                                 <BarChart data={chartData}>
-                                    <XAxis dataKey="day" />
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                    dataKey="year"
+                                    tickLine={false}
+                                    tickMargin={10}
+                                    axisLine={false}
+                                    />
                                     <YAxis />
-                                    <Tooltip />
-                                    <Bar dataKey="visits" fill="#3b82f6" />
+                                    <Tooltip content={<ChartTooltipContent />} />
+                                    <ChartLegend content={<ChartLegendContent />} />
+                                    <Bar dataKey="nasional" fill="var(--color-nasional)" radius={4} />
+                                    <Bar dataKey="internasional" fill="var(--color-internasional)" radius={4} />
                                 </BarChart>
                                 </ChartContainer>
                             </div>
@@ -91,17 +101,17 @@ export default function Chart() {
         <div className="flex flex-row">
             <DashboardCardChart 
                 title="Pengabdian" 
-                body={totalVisits.toString()} 
+                body={totalPengabdian.toString()} 
                 chartData={data}
             />
             <DashboardCardChart 
                 title="Penelitian" 
-                body={totalVisits.toString()} 
+                body={totalPenelitian.toString()} 
                 chartData={data}
             />
             <DashboardCardDosen 
                 title="Dosen" 
-                body={totalVisits.toString()}
+                body={totalDosen.toString()}
             />
         </div>
     )
