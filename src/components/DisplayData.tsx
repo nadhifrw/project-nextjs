@@ -85,7 +85,11 @@ function DashboardCardDosen({title, body}: DashboardCardDosenProps){
     return(
         <div className="flex">
             <Card>
-                <CardTitle>{title}</CardTitle>
+                <CardTitle>
+                    <div className="pt-6">
+                        {title}
+                    </div>
+                </CardTitle>
                 <CardHeader>
                     <div className="">
                         {body}
@@ -98,7 +102,7 @@ function DashboardCardDosen({title, body}: DashboardCardDosenProps){
 
 export default function Chart() {
     return (
-        <div className="flex flex-row">
+        <div className="flex flex-row ">
             <DashboardCardChart 
                 title="Pengabdian" 
                 body={totalPengabdian.toString()} 

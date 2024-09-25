@@ -12,12 +12,21 @@ export default async function Page() {
 
     return (
     <main>
-        <div>
-             <DisplayData />
-             <DisplayTable/>
-             <div>
+        <div className='border '>
+            <div className='flex items-center justify-center'>
+                <DisplayData />
+            </div>
+             
+            <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
+                {/* <div className='text-xl font-bold pb-4'>
+                    Departmen
+                </div> */}
+                <DisplayTable/>
+            </div>
+             
+            <div>
                 
-             </div>
+            </div>
         </div>
 
     </main>

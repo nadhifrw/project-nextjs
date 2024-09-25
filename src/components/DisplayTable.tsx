@@ -3,106 +3,77 @@
 import React, { useState } from 'react'
 import * as TableComponents from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input";
 
-// Sample larger dataset
 const data = [
-  // { day: 'Mon', visits: 120 },
-  // { day: 'Tue', visits: 150 },
-  // { day: 'Wed', visits: 180 },
-  // { day: 'Thu', visits: 200 },
-  // { day: 'Fri', visits: 250 },
-  // { day: 'Sat', visits: 300 },
-  // { day: 'Sun', visits: 280 },
-  // { day: 'Mon', visits: 300 }
-  { no: 1, namaDepartmen : "Department Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 2, namaDepartmen : "Department Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 3, namaDepartmen : "Department Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 4, namaDepartmen : "Department Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 5, namaDepartmen : "Department Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 6, namaDepartmen : "Departemen Biostatistik, Epidemiologi, dan Kesehatan Populasi", dosen: 20, penelitian: 5, pengabdian: 1 }
-]
-
-const ITEMS_PER_PAGE = 5
+  { no: 1, namaDepartemen: "Departemen Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 2, namaDepartemen: "Departemen Anestesiologi dan Terapi Intensif", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 3, namaDepartemen: "Departemen Biokimia", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 4, namaDepartemen: "Departemen Biostatistik, Epidemiologi, dan Kesehatan Populasi", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 5, namaDepartemen: "Departemen Dermatologi dan Venereologi", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 6, namaDepartemen: "Departemen Farmakologi dan Terapi", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 7, namaDepartemen: "Departemen Fisiologi", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 8, namaDepartemen: "Departemen Gizi Kesehatan", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 9, namaDepartemen: "Departemen Histologi dan Biologi Sel", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 10, namaDepartemen: "Departemen Ilmu Bedah", dosen: 20, penelitian: 5, pengabdian: 1 },
+  { no: 11, namaDepartemen: "Departemen Ilmu Kesehatan Anak", dosen: 20, penelitian: 5, pengabdian: 1 },
+  
+];
 
 export function UserVisitsTable() {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const totalPages = Math.ceil(data.length / ITEMS_PER_PAGE)
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-  const endIndex = startIndex + ITEMS_PER_PAGE
-  const currentData = data.slice(startIndex, endIndex)
-
-  const totalVisits = data.reduce((sum, item) => sum + item.penelitian + item.pengabdian, 0)
+  const filteredData = data.filter(item =>
+    item.namaDepartemen.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div>
-      {/* <TableComponents.Table>
-        <TableComponents.TableCaption>User visits</TableComponents.TableCaption>
-        <TableComponents.TableHeader>
-          <TableComponents.TableRow>
-            <TableComponents.TableHead>Day</TableComponents.TableHead>
-            <TableComponents.TableHead className="text-right">Visits</TableComponents.TableHead>
-          </TableComponents.TableRow>
-        </TableComponents.TableHeader>
-        <TableComponents.TableBody>
-          {currentData.map((row) => (
-            <TableComponents.TableRow key={row.day}>
-              <TableComponents.TableCell className="font-medium">{row.day}</TableComponents.TableCell>
-              <TableComponents.TableCell className="text-right">{row.visits}</TableComponents.TableCell>
-            </TableComponents.TableRow>
-          ))}
-        </TableComponents.TableBody>
-      </TableComponents.Table> */}
-      <TableComponents.Table>
-        <TableComponents.TableHeader>
-          <TableComponents.TableRow>
-            <TableComponents.TableHead className='text-center w-0'>No</TableComponents.TableHead>
-            <TableComponents.TableHead className='text-center w-6'>Nama Departemen</TableComponents.TableHead>
-            <TableComponents.TableHead className='text-center w-2'>Dosen</TableComponents.TableHead>
-            <TableComponents.TableHead className='text-center w-2'>Penelitian</TableComponents.TableHead>
-            <TableComponents.TableHead className='text-center w-2'>Pengabdian</TableComponents.TableHead>
-            <TableComponents.TableHead className='text-center w-2'>Action</TableComponents.TableHead>
-          </TableComponents.TableRow>
-        </TableComponents.TableHeader>
-        <TableComponents.TableBody>
-          {currentData.map((row) => (
-            <TableComponents.TableRow>
-              <TableComponents.TableCell>{row.no}</TableComponents.TableCell>
-              <TableComponents.TableCell>{row.namaDepartmen}</TableComponents.TableCell>
-              <TableComponents.TableCell className='text-center'>{row.dosen}</TableComponents.TableCell>
-              <TableComponents.TableCell className='text-center'>{row.penelitian}</TableComponents.TableCell>
-              <TableComponents.TableCell className='text-center'>{row.pengabdian}</TableComponents.TableCell>
-            </TableComponents.TableRow>
-          ))}
-        </TableComponents.TableBody>
-      </TableComponents.Table>
-      
-      <div className="flex justify-between items-center mt-4">
-        <div>
-          Page {currentPage} of {totalPages}
-        </div>
-        <div>
-          <Button 
-            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <Button 
-            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-            disabled={currentPage === totalPages}
-            className="ml-2"
-          >
-            Next
-          </Button>
+    <div className="w-full">
+      <div className="mb-4 flex justify-between items-center">
+        <h2 className="text-2xl font-bold">Departemen</h2>
+        <div className="flex items-center">
+          <span className="mr-2 font-bold">Search:</span>
+          <Input
+            type="text"
+            placeholder="Search..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-64"
+          />
         </div>
       </div>
-      
-      <div className="mt-4">
-        <strong>Total Visits: {totalVisits}</strong>
+      <div className="border rounded-lg overflow-hidden">
+        <div className="overflow-x-auto">
+          <TableComponents.Table>
+            <TableComponents.TableHeader className="bg-gray-100 sticky top-0">
+              <TableComponents.TableRow>
+                <TableComponents.TableHead className="w-16 text-left">No</TableComponents.TableHead>
+                <TableComponents.TableHead className="w-1/2 text-left">Nama Departemen</TableComponents.TableHead>
+                <TableComponents.TableHead className="w-24 text-center">Dosen</TableComponents.TableHead>
+                <TableComponents.TableHead className="w-24 text-center">Penelitian</TableComponents.TableHead>
+                <TableComponents.TableHead className="w-24 text-center">Pengabdian</TableComponents.TableHead>
+                <TableComponents.TableHead className="w-24 text-center">Action</TableComponents.TableHead>
+              </TableComponents.TableRow>
+            </TableComponents.TableHeader>
+            <TableComponents.TableBody>
+              {filteredData.map((row) => (
+                <TableComponents.TableRow key={row.no}>
+                  <TableComponents.TableCell>{row.no}</TableComponents.TableCell>
+                  <TableComponents.TableCell>{row.namaDepartemen}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{row.dosen}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{row.penelitian}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{row.pengabdian}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">
+                    <Button variant="outline" size="sm">Detail</Button>
+                  </TableComponents.TableCell>
+                </TableComponents.TableRow>
+              ))}
+            </TableComponents.TableBody>
+          </TableComponents.Table>
+        </div>
       </div>
     </div>
-  )
+  );
 }
 
 export default function Table(){
