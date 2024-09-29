@@ -10,7 +10,7 @@ import Link from 'next/link';
 type Dosen = {
   nidn: string;
   nama: string;
-  departemen: {
+  department: {
     nama: string;
   };
 };
@@ -66,7 +66,7 @@ export function DosenTable({ data }: DosenTableProps) {
                 <TableComponents.TableCell>{index + 1}</TableComponents.TableCell>
                 <TableComponents.TableCell>{row.nidn}</TableComponents.TableCell>
                 <TableComponents.TableCell>{row.nama}</TableComponents.TableCell>
-                <TableComponents.TableCell>{row.departemen.nama}</TableComponents.TableCell>
+                <TableComponents.TableCell>{row.department.nama}</TableComponents.TableCell>
                 <TableComponents.TableCell className="text-center">
                   <Link href={`/dashboard/dosen/${row.nidn}`} passHref>
                     <Button variant="outline" size="sm">Detail</Button>

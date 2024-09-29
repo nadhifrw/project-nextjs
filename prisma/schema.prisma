@@ -43,8 +43,8 @@ model User {
 
 }
 
-model Departement {
-  id_departemen Int     @id
+model Department {
+  id_department Int     @id
   nama          String
   dosen         Dosen[]
 }
@@ -52,8 +52,8 @@ model Departement {
 model Dosen {
   nidn           String          @id
   nama           String
-  departemen     Departement   @relation(fields: [id_departemen], references: [id_departemen])
-  id_departemen  Int
+  department      Department   @relation(fields: [id_department], references: [id_department])
+  id_department   Int
   Pengabdian     Pengabdian[]
   penelitian     Penelitian[]
 }

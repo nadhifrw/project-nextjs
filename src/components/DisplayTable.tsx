@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import * as TableComponents from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
+import Link from 'next/link';
 
 const data = [
   { no: 1, namaDepartemen: "Departemen Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
@@ -64,7 +65,9 @@ export function TableDepartment() {
                   <TableComponents.TableCell className="text-center">{row.penelitian}</TableComponents.TableCell>
                   <TableComponents.TableCell className="text-center">{row.pengabdian}</TableComponents.TableCell>
                   <TableComponents.TableCell className="text-center">
+                  <Link href={`dashboard/department/${row.namaDepartemen}`}>
                     <Button variant="outline" size="sm">Detail</Button>
+                  </Link> 
                   </TableComponents.TableCell>
                 </TableComponents.TableRow>
               ))}

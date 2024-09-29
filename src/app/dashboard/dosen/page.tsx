@@ -7,10 +7,10 @@ import React, { useEffect, useState } from 'react';
 type Dosen = {
     nidn: string;
     nama: string;
-    departemen: {
+    department: {
       nama: string;
     };
-  };
+};
 
 export default function Page() {
     const [data, setData] = useState<Dosen[]>([]);

@@ -8,7 +8,7 @@ import DisplayTableDosen from '@/components/dosen/DisplayTableDosen';
 export default async function DosenDetailPage({ params }: { params: { nidn: string } }) {
   const dosen = await prisma.dosen.findUnique({
     where: { nidn: params.nidn },
-    include: { departemen: true }
+    include: { department: true }
   });
 
   if (!dosen) {
