@@ -50,7 +50,7 @@ model Departement {
 }
 
 model Dosen {
-  nidn           Int          @id
+  nidn           String          @id
   nama           String
   departemen     Departement   @relation(fields: [id_departemen], references: [id_departemen])
   id_departemen  Int

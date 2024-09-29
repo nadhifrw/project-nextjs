@@ -20,7 +20,7 @@ const data = [
   
 ];
 
-export function UserVisitsTable() {
+export function TableDepartment() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredData = data.filter(item =>
@@ -79,7 +79,7 @@ export function UserVisitsTable() {
 export default function Table(){
     return (
         <div>
-            <UserVisitsTable/>
+            <TableDepartment/>
         </div>
     )
 }

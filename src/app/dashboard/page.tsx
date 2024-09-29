@@ -1,3 +1,4 @@
+import AddDataButton from '@/components/AddDataButton';
 import DisplayData from '@/components/DisplayData';
 import DisplayTable from '@/components/DisplayTable';
 import { auth } from '@/lib/auth'
@@ -13,6 +14,9 @@ export default async function Page() {
     return (
     <main>
         <div className='border '>
+            <div>
+                <AddDataButton/>
+            </div>
             <div className='flex items-center justify-center'>
                 <DisplayData />
             </div>
