@@ -27,6 +27,9 @@ export function DosenTable({ data }: DosenTableProps) {
   const filteredData = data.filter((item) =>
     item.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  // const filteredData = Array.isArray(data) ? data.filter((item) =>
+  //   item.nama.toLowerCase().includes(searchTerm.toLowerCase())
+  // ) : [];
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;

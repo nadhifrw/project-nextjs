@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "./ui/chart";
@@ -16,7 +17,6 @@ const data = [
 
 const totalPengabdian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
 const totalPenelitian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
-const totalDosen = 200;
 
 type DashboardCardChartProps = {
     title: string
@@ -24,10 +24,9 @@ type DashboardCardChartProps = {
     chartData: Array<{ year: number; nasional: number; internasional: number }>
 }
 
-type DashboardCardDosenProps = {
-    title: string
-    body: string
-}
+type DosenCount = {
+    count: number;
+};
 
 const chartConfig = {
     nasional: {
@@ -81,28 +80,41 @@ function DashboardCardChart({title, body, chartData}: DashboardCardChartProps) {
     )
 }
 
-function DashboardCardDosen({title, body}: DashboardCardDosenProps){
-    return(
+function DashboardCardDosen() {
+    const [dosenCount, setDosenCount] = useState<number | null>(null);
+
+    useEffect(() => {
+        // Fetch the dosen count from the API
+        async function fetchDosenCount() {
+            const response = await fetch('/api/totalDosen');
+            const data: DosenCount = await response.json();
+            setDosenCount(data.count);
+        }
+
+        fetchDosenCount();
+    }, []);
+
+    return (
         <div className="flex">
             <Card>
                 <CardTitle>
                     <div className="pt-6">
-                        {title}
+                        Dosen
                     </div>
                 </CardTitle>
                 <CardHeader>
                     <div className="">
-                        {body}
+                        {dosenCount}
                     </div>
                 </CardHeader>
             </Card>
         </div>
-    )
+    );
 }
 
 export default function Chart() {
     return (
-        <div className="flex flex-row ">
+        <div className="flex flex-row">
             <DashboardCardChart 
                 title="Pengabdian" 
                 body={totalPengabdian.toString()} 
@@ -113,10 +125,7 @@ export default function Chart() {
                 body={totalPenelitian.toString()} 
                 chartData={data}
             />
-            <DashboardCardDosen 
-                title="Dosen" 
-                body={totalDosen.toString()}
-            />
+            <DashboardCardDosen />
         </div>
     )
 }

@@ -1,38 +1,28 @@
-import AddDataButton from '@/components/AddDataButton';
-import DisplayData from '@/components/DisplayData';
-import DisplayTable from '@/components/DisplayTable';
+// app/dashboard/page.tsx
 import { auth } from '@/lib/auth'
-import { redirect } from 'next/navigation';
+import prisma from '@/lib/prisma'
+import { redirect } from 'next/navigation'
+import DashboardClient from './DashboardClient'
 
-export default async function Page() {
-    const session = await auth();
-    console.log(session)
-    if (!session?.user) {
-        redirect('/')
-    }
+export default async function DashboardPage() {
+  const session = await auth()
+  if (!session?.user) {
+    redirect('/')
+  }
 
-    return (
-    <main>
-        <div className='border '>
-            <div>
-                <AddDataButton/>
-            </div>
-            <div className='flex items-center justify-center'>
-                <DisplayData />
-            </div>
-             
-            <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
-                {/* <div className='text-xl font-bold pb-4'>
-                    Departmen
-                </div> */}
-                <DisplayTable/>
-            </div>
-             
-            <div>
-                
-            </div>
-        </div>
+  const departments = await prisma.department.findMany({
+    include: { 
+      dosen: true,
+      _count: {
+        select: {
+          dosen: true,
+          pengabdian: true,
+          penelitian: true,
+        }
+      }
+    },
+  })
 
-    </main>
-    )
+  const totalDosen = await prisma.dosen.count()
+  return <DashboardClient initialDepartments={departments} />
 }

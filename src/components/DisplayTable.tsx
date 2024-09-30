@@ -1,32 +1,37 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as TableComponents from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input";
 import Link from 'next/link';
 
-const data = [
-  { no: 1, namaDepartemen: "Departemen Anatomi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 2, namaDepartemen: "Departemen Anestesiologi dan Terapi Intensif", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 3, namaDepartemen: "Departemen Biokimia", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 4, namaDepartemen: "Departemen Biostatistik, Epidemiologi, dan Kesehatan Populasi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 5, namaDepartemen: "Departemen Dermatologi dan Venereologi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 6, namaDepartemen: "Departemen Farmakologi dan Terapi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 7, namaDepartemen: "Departemen Fisiologi", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 8, namaDepartemen: "Departemen Gizi Kesehatan", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 9, namaDepartemen: "Departemen Histologi dan Biologi Sel", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 10, namaDepartemen: "Departemen Ilmu Bedah", dosen: 20, penelitian: 5, pengabdian: 1 },
-  { no: 11, namaDepartemen: "Departemen Ilmu Kesehatan Anak", dosen: 20, penelitian: 5, pengabdian: 1 },
-  
-];
+type Department = {
+  id_department: number;
+  nama: string;
+  dosen: { nidn: string }[];
+  _count: {
+    dosen: number;
+    pengabdian: number;
+    penelitian: number;
+  };
+};
 
-export function TableDepartment() {
+interface DepartmentTableProps {
+  departments: Department[];
+}
+
+export function TableDepartment({ departments }: DepartmentTableProps ) {
   const [searchTerm, setSearchTerm] = useState('');
+  // const [isLoading, setIsLoading] = useState(true);
 
-  const filteredData = data.filter(item =>
-    item.namaDepartemen.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = departments.filter(item =>
+    item.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  // if (isLoading) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="w-full">
@@ -57,17 +62,17 @@ export function TableDepartment() {
               </TableComponents.TableRow>
             </TableComponents.TableHeader>
             <TableComponents.TableBody>
-              {filteredData.map((row) => (
-                <TableComponents.TableRow key={row.no}>
-                  <TableComponents.TableCell>{row.no}</TableComponents.TableCell>
-                  <TableComponents.TableCell>{row.namaDepartemen}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-center">{row.dosen}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-center">{row.penelitian}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-center">{row.pengabdian}</TableComponents.TableCell>
+              {filteredData.map((department, index) => (
+                <TableComponents.TableRow key={department.id_department}>
+                  <TableComponents.TableCell>{index + 1}</TableComponents.TableCell>
+                  <TableComponents.TableCell>{department.nama}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{department._count.dosen}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{department._count.penelitian}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-center">{department._count.pengabdian}</TableComponents.TableCell>
                   <TableComponents.TableCell className="text-center">
-                  <Link href={`dashboard/department/${row.namaDepartemen}`}>
-                    <Button variant="outline" size="sm">Detail</Button>
-                  </Link> 
+                    <Link href={`dashboard/department/${department.nama}`}>
+                      <Button variant="outline" size="sm">Detail</Button>
+                    </Link> 
                   </TableComponents.TableCell>
                 </TableComponents.TableRow>
               ))}
@@ -79,10 +84,10 @@ export function TableDepartment() {
   );
 }
 
-export default function Table(){
-    return (
-        <div>
-            <TableDepartment/>
-        </div>
-    )
-}
+// export default function Table(){
+//     return (
+//         <div>
+//             <TableDepartment />
+//         </div>
+//     )
+// }

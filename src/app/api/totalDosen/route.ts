@@ -5,11 +5,7 @@ import { NextResponse } from 'next/server';
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const dosen = await prisma.dosen.findMany({
-    include: {
-      department: true, 
-    }, 
-  });
-  return NextResponse.json(dosen);
-}
+  const countDosen = await prisma.dosen.count(); // This will count the number of 'dosen'
 
+  return NextResponse.json({ count: countDosen });
+}

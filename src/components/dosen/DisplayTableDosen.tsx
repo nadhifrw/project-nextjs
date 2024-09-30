@@ -1,20 +1,15 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import * as TableComponents from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect } from 'react';
+import * as TableComponents from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-
-// Sample data - you can replace this with your actual data source
-const data = [
-  { id: 2144576, namaDepartemen: "Eksplorasi Efek Renoprotektif Exosome dari Human Umbilical Cord Mesenchymal Stem Cells terhadap Model Cedera Iskemia Reperfusi Ginjal Fase Kronis: Analisis Fungsional Seluler Molekuler pada Cedera Tubulus, Apoptosis-Regenerasi dan dan Stres Oksidatif", dosen: "dr. Dwi Aris Agung Nugrahaningsih, M.Sc., Ph.D, dr. Nur Arfian, Ph.D", link: "https://sdm.repository.ugm.ac.id/karya_files/eksplorasi-efek-renoprotekt" },
-  // Add more data items here if needed
-];
 
 type DataItem = {
   id: number;
-  namaDepartemen: string;
-  dosen: string;
+  judul: string;
+  penulis: string;
+  penulisExternal: string;
   link: string;
 };
 
@@ -40,8 +35,8 @@ function TableContent({ filteredData }: TableContentProps) {
               filteredData.map((row) => (
                 <TableComponents.TableRow key={row.id}>
                   <TableComponents.TableCell className='text-center'>{row.id}</TableComponents.TableCell>
-                  <TableComponents.TableCell>{row.namaDepartemen}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-left">{row.dosen}</TableComponents.TableCell>
+                  <TableComponents.TableCell>{row.judul}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-left">{row.penulis}</TableComponents.TableCell>
                   <TableComponents.TableCell className="text-left">{row.link}</TableComponents.TableCell>
                 </TableComponents.TableRow>
               ))
@@ -59,11 +54,34 @@ function TableContent({ filteredData }: TableContentProps) {
   );
 }
 
-export function DosenTablePenelitian() {
+function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [data, setData] = useState<DataItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await fetch('/api/paper');
+        const result = await response.json();
+        setData(result[dataType].data.map((item: any) => ({
+          id: item.id_data,
+          judul: item.judul,
+          penulis: item.penulis.nama + (item.penulisExternal.length ? ', ' + item.penulisExternal.join(', ') : ''),
+          penulisExternal: item.penulisExternal.join(', '),
+          link: item.url
+        })));
+        setIsLoading(false);
+      } catch (error) {
+        setIsLoading(false);
+      }
+    }
+    fetchData();
+  }, [dataType]);
 
   const filteredData = data.filter(item =>
-    item.namaDepartemen.toLowerCase().includes(searchTerm.toLowerCase())
+    item.judul.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -94,52 +112,17 @@ export function DosenTablePenelitian() {
   );
 }
 
-export function DosenTablePengabdian() {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredData = data.filter(item =>
-    item.namaDepartemen.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+export default function Table() {
   return (
-    <div className="w-full">
-      <div className="mb-4 flex justify-between items-center">
-        <div className="flex items-center space-x-2">
-          <span>Show</span>
-          <select className="border rounded p-1">
-            <option>10</option>
-            <option>25</option>
-            <option>50</option>
-          </select>
-          <span>entries</span>
-        </div>
-        <div className="flex items-center">
-          <span className="mr-2">Search:</span>
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
-        </div>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Penelitian</h2>
+        <DataTable dataType="penelitian" />
       </div>
-      <TableContent filteredData={filteredData} />
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Pengabdian</h2>
+        <DataTable dataType="pengabdian" />
+      </div>
     </div>
   );
-}
-
-export default function Table(){
-    return (
-      <div className="space-y-8">
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Penelitian</h2>
-          <DosenTablePenelitian/>
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Pengabdian</h2>
-          <DosenTablePengabdian/>
-        </div>
-      </div>
-    )
 }

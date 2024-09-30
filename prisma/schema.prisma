@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,63 +7,51 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// // Define the User model
-// model User {
-//   id        Int      @id @default(autoincrement()) // Auto-incrementing primary key
-//   username  String   @unique                      // Unique username
-//   email     String   @unique                      // Unique email
-//   password  String                                // Hashed password
-//   createdAt DateTime @default(now())              // Timestamp for when the user was created
-//   updatedAt DateTime @updatedAt                   // Automatically updated timestamp for when the user was last updated
-
-//   Session Session[]
-// }
-
-// // Optional: Add an example session model if you're managing sessions in the database
-// model Session {
-//   id           Int      @id @default(autoincrement()) // Auto-incrementing primary key
-//   userId       Int                                     
-//   user         User     @relation(fields: [userId], references: [id]) // Foreign key relation to User
-//   sessionToken String   @unique                        // Unique token for the session
-//   expires      DateTime                               // Expiration date for the session
-// }
-
 model User {
-  id        String   @id @default(cuid()) // Auto-incrementing primary key
-  username  String   @unique                      // Unique username                      // Unique email
-  password  String                                // Hashed password
-  createdAt DateTime @default(now())              // Timestamp for when the user was created
-  updatedAt DateTime @updatedAt                   // Automatically updated timestamp for when the user was last updated
-
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Department {
-  id_department Int     @id
-  nama          String
+  id_department Int           @id
+  nama          String        @unique
   dosen         Dosen[]
+  pengabdian    Pengabdian[]
+  penelitian    Penelitian[]
 }
 
 model Dosen {
-  nidn           String          @id
+  nidn           String       @id
   nama           String
-  department      Department   @relation(fields: [id_department], references: [id_department])
-  id_department   Int
-  Pengabdian     Pengabdian[]
+  department     Department   @relation(fields: [id_department], references: [id_department])
+  id_department  Int
+  pengabdian     Pengabdian[]
   penelitian     Penelitian[]
 }
 
-model Penelitian {
-  id_data Int      @id
-  judul   String
-  penulis Dosen[]
-  tingkat String
-  url     String
+model Pengabdian {
+  id_data         Int        @id
+  judul           String
+  penulisExternal String[]
+  penulis         Dosen      @relation(fields: [penulisNidn], references: [nidn])
+  penulisNidn     String
+  tingkat         String
+  url             String
+  department      Department @relation(fields: [id_department], references: [id_department])
+  id_department   Int
 }
 
-model Pengabdian {
-  id_data Int      @id
-  judul   String
-  penulis Dosen[]
-  tingkat String
-  url     String
+model Penelitian {
+  id_data         Int        @id
+  judul           String
+  penulisExternal String[]
+  penulis         Dosen      @relation(fields: [penulisNidn], references: [nidn])
+  penulisNidn     String
+  tingkat         String
+  url             String
+  department      Department @relation(fields: [id_department], references: [id_department])
+  id_department   Int
 }
