@@ -103,10 +103,15 @@ function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
   if (error) return <div>Error: {error}</div>;
   if (!data) return <div>No data available</div>;
 
-  const filteredData = data[dataType].filter(item =>
+  
+  const relevantData = data[dataType] || [];
+  const filteredData = relevantData.filter(item =>
     item.judul.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // const filteredData = data[dataType].filter(item =>
+  //   item.judul.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
   return (
     <div className="w-full">
       <div className="mb-4 flex justify-between items-center">
@@ -130,7 +135,7 @@ function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
           />
         </div>
       </div>
-      <TableContent filteredData={filteredData} dosenNama={data.nama} />
+      <TableContent filteredData={filteredData} dosenNama={data.dosen.nama} />
     </div>
   );
 }

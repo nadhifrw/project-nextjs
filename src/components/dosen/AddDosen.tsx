@@ -1,19 +1,29 @@
-'use client'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { FileUploadForm } from './FileUploadForm';
 
-import { Button } from "@/components/ui/button"
+export default function UploadDosenModal() {
+  const [open, setOpen] = useState(false);
 
-export function AddButtonDosen(){
-    return(
-        <div className="w-full">
-            <Button className="bg-green-500 hover:bg-green-700">Tambah Dosen</Button>
-        </div>
-    )
+  return (
+    <div>
+      <Button onClick={() => setOpen(true)} className="bg-green-500 text-white">
+        Tambah Dosen
+      </Button>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tambah Dosen</DialogTitle>
+            <DialogDescription>
+              Upload file .csv untuk menambahkan dosen ke dalam database.
+            </DialogDescription>
+          </DialogHeader>
+          <FileUploadForm closeModal={() => setOpen(false)} />
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
 }
 
-export default function DosenButton(){
-    return (
-        <div className="container mb-4">
-            <AddButtonDosen/>
-        </div>
-    )
-}

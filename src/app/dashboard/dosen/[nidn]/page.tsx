@@ -43,7 +43,7 @@ export default function DosenDetailPage() {
   // if (!dosen) {
   //   notFound();
   // }
-  const [dosen, setDosen] = useState<Dosen | null>(null);
+  const [data, setDosen] = useState<Dosen | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
@@ -74,7 +74,7 @@ export default function DosenDetailPage() {
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
-  if (!dosen) return <div>No data found for this dosen.</div>;
+  if (!data) return <div>No data found for this dosen.</div>;
 
   return (
     <div className="container mx-auto">
@@ -84,7 +84,7 @@ export default function DosenDetailPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                 </svg>
                 <div className='font-bold pl-4'>
-                    {dosen.nama}
+                    {data.dosen.nama}
                 </div>
             </button>
         </Link>

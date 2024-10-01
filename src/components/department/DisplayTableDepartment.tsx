@@ -11,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { useParams } from 'next/navigation';
 
 type DataItem = {
   id_data: number;
@@ -48,7 +49,7 @@ function TableContent({ filteredData }: TableContentProps) {
                   <TableComponents.TableCell className='text-center'>{row.id_data}</TableComponents.TableCell>
                   <TableComponents.TableCell>{row.judul}</TableComponents.TableCell>
                   <TableComponents.TableCell className="text-left">
-                    {row.penulis.nama} (NIDN: {row.penulis.nidn})
+                    {row.penulis.nama}
                     {row.penulisExternal.length > 0 && (
                       <>, {row.penulisExternal.join(', ')}</>
                     )}
@@ -80,19 +81,20 @@ export default function ResearchDashboard() {
   const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[] }>({ penelitian: [], pengabdian: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const params = useParams();
+  const nama = params.nama as string;
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/paper'); // Adjust this URL to match your API route
+        const response = await fetch(`/api/department/${nama}`); // Adjust this URL to match your API route
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         const result = await response.json();
         setData({
           penelitian: result.penelitian.data,
-          pengabdian: result.pengabdian.data
+          pengabdian: result.pengabdian.data,
         });
         setError(null);
       } catch (err) {

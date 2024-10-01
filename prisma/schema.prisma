@@ -42,6 +42,7 @@ model Pengabdian {
   url             String
   department      Department @relation(fields: [id_department], references: [id_department])
   id_department   Int
+  tahun           Int
 }
 
 model Penelitian {
@@ -54,4 +55,5 @@ model Penelitian {
   url             String
   department      Department @relation(fields: [id_department], references: [id_department])
   id_department   Int
+  tahun           Int
 }

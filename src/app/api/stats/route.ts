@@ -9,7 +9,7 @@ export async function GET() {
     // Fetch pengabdian data
     const pengabdianData = await prisma.pengabdian.findMany({
       select: {
-        id_data: true,
+        tahun: true,
         tingkat: true,
       },
     });
@@ -17,7 +17,7 @@ export async function GET() {
     // Fetch penelitian data
     const penelitianData = await prisma.penelitian.findMany({
       select: {
-        id_data: true,
+        tahun: true,
         tingkat: true,
       },
     });
@@ -35,19 +35,17 @@ export async function GET() {
 
     // Aggregate pengabdian data
     pengabdianData.forEach(item => {
-      const year = new Date(item.id_data.toString().slice(0, 4)).getFullYear();
-      if (year >= startYear && year <= currentYear) {
+      if (item.tahun >= startYear && item.tahun <= currentYear) {
         const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
-        yearlyStats[year][category]++;
+        yearlyStats[item.tahun][category]++;
       }
     });
 
     // Aggregate penelitian data
     penelitianData.forEach(item => {
-      const year = new Date(item.id_data.toString().slice(0, 4)).getFullYear();
-      if (year >= startYear && year <= currentYear) {
+      if (item.tahun >= startYear && item.tahun <= currentYear) {
         const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
-        yearlyStats[year][category]++;
+        yearlyStats[item.tahun][category]++;
       }
     });
 

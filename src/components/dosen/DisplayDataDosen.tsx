@@ -1,96 +1,162 @@
-'use client'
+'use client';
 
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { useParams } from 'next/navigation';
 
-// Updated data structure for the last 5 years
-const currentYear = new Date().getFullYear();
-const data = [
-  { year: currentYear - 4, nasional: 186, internasional: 80 },
-  { year: currentYear - 3, nasional: 305, internasional: 200 },
-  { year: currentYear - 2, nasional: 237, internasional: 120 },
-  { year: currentYear - 1, nasional: 273, internasional: 190 },
-  { year: currentYear, nasional: 309, internasional: 230 },
-];
+type ChartData = {
+  year: number;
+  pengabdianNasional: number;
+  pengabdianInternasional: number;
+  penelitianNasional: number;
+  penelitianInternasional: number;
+};
 
-const totalPengabdian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
-const totalPenelitian = data.reduce((sum, item) => sum + item.nasional + item.internasional, 0);
-const totalDosen = 200;
-
-type DashboardCardChartProps = {
-    title: string
-    body: string
-    chartData: Array<{ year: number; nasional: number; internasional: number }>
-}
+type DashboardData = {
+  yearlyStats: ChartData[];
+  totalDosen: number;
+  totalPengabdian: number;
+  totalPenelitian: number;
+};
 
 const chartConfig = {
-    nasional: {
-      label: "Nasional",
-      color: "#ccffcc",
-    },
-    internasional: {
-      label: "Internasional",
-      color: "#64C240",
-    },
-  } satisfies ChartConfig
+  nasional: {
+    label: "Nasional",
+    color: "#ccffcc",
+  },
+  internasional: {
+    label: "Internasional",
+    color: "#64C240",
+  },
+} satisfies ChartConfig;
 
-function DosenCardChart({title, body, chartData}: DashboardCardChartProps) {
-    return (
-        <div className="flex">
-            <Card>
-                <div className="flex p-5">
-                    <div className="border-r border-solid border-black">
-                        <CardTitle>{title}</CardTitle>
-                        <CardHeader>
-                            <div className="">
-                                {body}
-                            </div>
-                        </CardHeader>
-                    </div>
-                    <div className="">
-                        <CardContent>
-                            <div className="flex">
-                            <ChartContainer config={chartConfig} className="min-h-[200px] w-full">
-                                <BarChart data={chartData}>
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis
-                                    dataKey="year"
-                                    tickLine={false}
-                                    tickMargin={10}
-                                    axisLine={false}
-                                    />
-                                    <YAxis />
-                                    <Tooltip content={<ChartTooltipContent />} />
-                                    <ChartLegend content={<ChartLegendContent />} />
-                                    <Bar dataKey="nasional" fill="var(--color-nasional)" radius={4} />
-                                    <Bar dataKey="internasional" fill="var(--color-internasional)" radius={4} />
-                                </BarChart>
-                                </ChartContainer>
-                            </div>
-                        </CardContent>
-                    </div>
-                </div>
-            </Card>
+function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyInternational }: {
+  title: string;
+  body: string | number;
+  chartData: ChartData[];
+  dataKeyNational: string;
+  dataKeyInternational: string;
+}) {
+  return (
+    <div className="flex">
+      <Card>
+        <div className='flex p-5'>      
+          <div className='border-r border-solid border-black'>
+            <CardTitle>{title}</CardTitle>
+            <CardHeader>
+              <div className="">{body}</div>
+            </CardHeader>
+          </div>
+          <div>
+            <CardContent>
+              <div className=''>
+                <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        dataKey="year"
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                      />
+                      <YAxis />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      <Bar dataKey={dataKeyNational} fill="var(--color-nasional)" radius={4} />
+                      <Bar dataKey={dataKeyInternational} fill="var(--color-internasional)" radius={4} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </CardContent>
+          </div>
         </div>
-    )
+      </Card>
+    </div>
+  );
 }
 
+function DashboardCardDosen({ count }: { count: number }) {
+  return (
+    <div className="flex">
+      <Card>
+        <CardTitle>
+          <div className="pt-6">
+            Dosen
+          </div>
+        </CardTitle>
+        <CardHeader>
+          <div className="">
+            {count}
+          </div>
+        </CardHeader>
+      </Card>
+    </div>
+  );
+}
 
+export default function Dashboard() {
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const params = useParams();
+  const nidn = params.nidn as string;
 
-export default function Chart() {
-    return (
-        <div className="flex flex-row ">
-            <DosenCardChart 
-                title="Pengabdian" 
-                body={totalPengabdian.toString()} 
-                chartData={data}
-            />
-            <DosenCardChart 
-                title="Penelitian" 
-                body={totalPenelitian.toString()} 
-                chartData={data}
-            />
-        </div>
-    )
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        setLoading(true);
+        const response = await fetch(`/api/dosen/${nidn}`);
+        // const response = await fetch(`/api/stats`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const data: DashboardData = await response.json();
+        setDashboardData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchDashboardData();
+  }, [nidn]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (!dashboardData) {
+    return <div>No data available</div>;
+  }
+
+  return (
+    <div className="p-4">
+      <div className="flex flex-row">
+        <DashboardCardChart
+          title="Pengabdian"
+          body={dashboardData.totalPengabdian}
+          chartData={dashboardData.yearlyStats}
+          dataKeyNational="pengabdianNasional"
+          dataKeyInternational="pengabdianInternasional"
+        />
+        <DashboardCardChart
+          title="Penelitian"
+          body={dashboardData.totalPenelitian}
+          chartData={dashboardData.yearlyStats}
+          dataKeyNational="penelitianNasional"
+          dataKeyInternational="penelitianInternasional"
+        />
+        <DashboardCardDosen count={dashboardData.totalDosen} />
+      </div>
+    </div>
+  );
 }
