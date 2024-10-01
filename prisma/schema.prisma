@@ -24,7 +24,7 @@ model Department {
 }
 
 model Dosen {
-  nidn           String       @id
+  nidn           String       @id @unique
   nama           String
   department     Department   @relation(fields: [id_department], references: [id_department])
   id_department  Int

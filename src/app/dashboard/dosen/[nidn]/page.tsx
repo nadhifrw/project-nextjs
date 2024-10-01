@@ -1,19 +1,80 @@
+'use client';
+
 import prisma from '@/lib/prisma';
-import { notFound } from 'next/navigation';
+import { notFound, useParams } from 'next/navigation';
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import Link from 'next/link';
 import DisplayDataDosen from '@/components/dosen/DisplayDataDosen';
 import DisplayTableDosen from '@/components/dosen/DisplayTableDosen';
+import { useEffect, useState } from 'react';
 
-export default async function DosenDetailPage({ params }: { params: { nidn: string } }) {
-  const dosen = await prisma.dosen.findUnique({
-    where: { nidn: params.nidn },
-    include: { department: true }
-  });
+type Penelitian = {
+  id_data: number;
+  judul: string;
+  penulisExternal: string[];
+  tingkat: string;
+  url: string;
+};
 
-  if (!dosen) {
-    notFound();
-  }
+type Pengabdian = {
+  id_data: number;
+  judul: string;
+  penulisExternal: string[];
+  tingkat: string;
+  url: string;
+};
+
+type Dosen = {
+  nidn: string;
+  nama: string;
+  department: {
+    nama: string;
+  };
+  penelitian: Penelitian[];
+  pengabdian: Pengabdian[];
+};
+
+export default function DosenDetailPage() {
+  // const dosen = await prisma.dosen.findUnique({
+  //   where: { nidn: params.nidn },
+  //   include: { department: true }
+  // });
+
+  // if (!dosen) {
+  //   notFound();
+  // }
+  const [dosen, setDosen] = useState<Dosen | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const params = useParams();
+  const nidn = params.nidn as string;
+
+  useEffect(() => {
+    async function fetchDosenData() {
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/dosen/${nidn}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch dosen data');
+        }
+        const data = await response.json();
+        setDosen(data);
+      } catch (err) {
+        setError('An error occurred while fetching the data.');
+        console.error(err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    if (nidn) {
+      fetchDosenData();
+    }
+  }, [nidn]);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
+  if (!dosen) return <div>No data found for this dosen.</div>;
 
   return (
     <div className="container mx-auto">

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import * as TableComponents from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -12,22 +12,14 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-// Sample data - you can replace this with your actual data source
-const penelitianData = [
-  { id: 2144576, namaDepartemen: "Eksplorasi Efek Renoprotektif Exosome dari Human Umbilical Cord Mesenchymal Stem Cells terhadap Model Cedera Iskemia Reperfusi Ginjal Fase Kronis: Analisis Fungsional Seluler Molekuler pada Cedera Tubulus, Apoptosis-Regenerasi dan dan Stres Oksidatif", dosen: "dr. Dwi Aris Agung Nugrahaningsih, M.Sc., Ph.D, dr. Nur Arfian, Ph.D", link: "https://sdm.repository.ugm.ac.id/karya_files/eksplorasi-efek-renoprotekt" },
-  // Add more penelitian data items here
-];
-
-const pengabdianData = [
-  { id: 3144576, namaDepartemen: "Program Pengabdian Masyarakat: Pelatihan Kesehatan Ginjal", dosen: "dr. Jane Doe, M.Sc., Ph.D", link: "https://example.com/pengabdian-kesehatan-ginjal" },
-  // Add more pengabdian data items here
-];
-
 type DataItem = {
-  id: number;
-  namaDepartemen: string;
-  dosen: string;
-  link: string;
+  id_data: number;
+  judul: string;
+  penulis: { nama: string; nidn: string };
+  penulisExternal: string[];
+  department: { nama: string };
+  tingkat: string;
+  url: string;
 };
 
 interface TableContentProps {
@@ -44,22 +36,33 @@ function TableContent({ filteredData }: TableContentProps) {
               <TableComponents.TableHead className="w-1/12 text-center">ID</TableComponents.TableHead>
               <TableComponents.TableHead className="w-1/4 text-left">Judul</TableComponents.TableHead>
               <TableComponents.TableHead className="w-1/4 text-left">Penulis</TableComponents.TableHead>
-              <TableComponents.TableHead className="w-1/6 text-left">Link</TableComponents.TableHead>
+              <TableComponents.TableHead className="w-1/6 text-left">Department</TableComponents.TableHead>
+              <TableComponents.TableHead className="w-1/6 text-left">Tingkat</TableComponents.TableHead>
+              <TableComponents.TableHead className="w-1/6 text-left">URL</TableComponents.TableHead>
             </TableComponents.TableRow>
           </TableComponents.TableHeader>
           <TableComponents.TableBody>
             {filteredData.length > 0 ? (
               filteredData.map((row) => (
-                <TableComponents.TableRow key={row.id}>
-                  <TableComponents.TableCell className='text-center'>{row.id}</TableComponents.TableCell>
-                  <TableComponents.TableCell>{row.namaDepartemen}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-left">{row.dosen}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="text-left">{row.link}</TableComponents.TableCell>
+                <TableComponents.TableRow key={row.id_data}>
+                  <TableComponents.TableCell className='text-center'>{row.id_data}</TableComponents.TableCell>
+                  <TableComponents.TableCell>{row.judul}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-left">
+                    {row.penulis.nama} (NIDN: {row.penulis.nidn})
+                    {row.penulisExternal.length > 0 && (
+                      <>, {row.penulisExternal.join(', ')}</>
+                    )}
+                  </TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-left">{row.department.nama}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-left">{row.tingkat}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="text-left">
+                    <a href={row.url} target="_blank" rel="noopener noreferrer">Link</a>
+                  </TableComponents.TableCell>
                 </TableComponents.TableRow>
               ))
             ) : (
               <TableComponents.TableRow>
-                <TableComponents.TableCell colSpan={4} className="text-center py-4">
+                <TableComponents.TableCell colSpan={6} className="text-center py-4">
                   Tidak terdapat data
                 </TableComponents.TableCell>
               </TableComponents.TableRow>
@@ -74,12 +77,41 @@ function TableContent({ filteredData }: TableContentProps) {
 export default function ResearchDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTable, setSelectedTable] = useState('penelitian');
+  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[] }>({ penelitian: [], pengabdian: [] });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const data = selectedTable === 'penelitian' ? penelitianData : pengabdianData;
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/paper'); // Adjust this URL to match your API route
+        if (!response.ok) {
+          throw new Error('Failed to fetch data');
+        }
+        const result = await response.json();
+        setData({
+          penelitian: result.penelitian.data,
+          pengabdian: result.pengabdian.data
+        });
+        setError(null);
+      } catch (err) {
+        setError('An error occurred while fetching data');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const filteredData = data.filter(item =>
-    item.namaDepartemen.toLowerCase().includes(searchTerm.toLowerCase())
+    fetchData();
+  }, []);
+
+  const filteredData = data[selectedTable as keyof typeof data].filter(item =>
+    item.judul.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="w-full space-y-4">
