@@ -12,6 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useParams } from 'next/navigation';
+import { Progress } from '../ui/progress';
 
 type DataItem = {
   id_data: number;
@@ -21,11 +22,53 @@ type DataItem = {
   department: { nama: string };
   tingkat: string;
   url: string;
+  count: number;
 };
-
 interface TableContentProps {
   filteredData: DataItem[];
 }
+
+interface LecturerListProps {
+  data: DataItem[];
+}
+
+function LecturerList({ filteredData }: TableContentProps) {
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <div className="overflow-x-auto">
+        <TableComponents.Table>
+          <TableComponents.TableHeader className="bg-gray-100 sticky top-0">
+            <TableComponents.TableRow>
+              <TableComponents.TableCell>Dosen</TableComponents.TableCell>
+              <TableComponents.TableCell>Progress</TableComponents.TableCell>
+            </TableComponents.TableRow>
+          </TableComponents.TableHeader>
+          <TableComponents.TableBody>
+            {filteredData.length > 0 ? (
+              filteredData.map((row) => (
+                <TableComponents.TableRow key={row.id_data}>
+                  <TableComponents.TableCell className='w-1/6'>{row.penulis.nama}</TableComponents.TableCell>
+                  <TableComponents.TableCell className="flex items-center ">
+                    {/* <Progress value={(row.count / 3) * 100} className="w-full h-4 bg-green-500 mr-2" />
+                    <span>{row.count}</span> */}
+                    {row.penulis.nidn}
+                  </TableComponents.TableCell>
+                </TableComponents.TableRow>
+              ))
+            ) : (
+              <TableComponents.TableRow>
+                <TableComponents.TableCell colSpan={6} className="text-center py-4">
+                  Tidak terdapat data
+                </TableComponents.TableCell>
+              </TableComponents.TableRow>
+            )}
+          </TableComponents.TableBody>
+        </TableComponents.Table>
+      </div>
+    </div>
+  );
+}
+
 
 function TableContent({ filteredData }: TableContentProps) {
   return (
@@ -78,7 +121,9 @@ function TableContent({ filteredData }: TableContentProps) {
 export default function ResearchDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTable, setSelectedTable] = useState('penelitian');
-  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[] }>({ penelitian: [], pengabdian: [] });
+  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[], dosen: DataItem[] }>({ 
+    penelitian: [], pengabdian: [], dosen:[] });
+  const [dosenData, setDosenData] = useState<DataItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
@@ -95,6 +140,7 @@ export default function ResearchDashboard() {
         setData({
           penelitian: result.penelitian.data,
           pengabdian: result.pengabdian.data,
+          dosen: result.dosen,
         });
         setError(null);
       } catch (err) {
@@ -106,7 +152,7 @@ export default function ResearchDashboard() {
     };
 
     fetchData();
-  }, []);
+  }, [nama]);
 
   const filteredData = data[selectedTable as keyof typeof data].filter(item =>
     item.judul.toLowerCase().includes(searchTerm.toLowerCase())
@@ -152,7 +198,9 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
+      <LecturerList   filteredData={filteredData} />
       <TableContent filteredData={filteredData} />
     </div>
   );
 }
+
