@@ -32,42 +32,42 @@ interface LecturerListProps {
   data: DataItem[];
 }
 
-function LecturerList({ filteredData }: TableContentProps) {
-  return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <TableComponents.Table>
-          <TableComponents.TableHeader className="bg-gray-100 sticky top-0">
-            <TableComponents.TableRow>
-              <TableComponents.TableCell>Dosen</TableComponents.TableCell>
-              <TableComponents.TableCell>Progress</TableComponents.TableCell>
-            </TableComponents.TableRow>
-          </TableComponents.TableHeader>
-          <TableComponents.TableBody>
-            {filteredData.length > 0 ? (
-              filteredData.map((row) => (
-                <TableComponents.TableRow key={row.id_data}>
-                  <TableComponents.TableCell className='w-1/6'>{row.penulis.nama}</TableComponents.TableCell>
-                  <TableComponents.TableCell className="flex items-center ">
-                    {/* <Progress value={(row.count / 3) * 100} className="w-full h-4 bg-green-500 mr-2" />
-                    <span>{row.count}</span> */}
-                    {row.penulis.nidn}
-                  </TableComponents.TableCell>
-                </TableComponents.TableRow>
-              ))
-            ) : (
-              <TableComponents.TableRow>
-                <TableComponents.TableCell colSpan={6} className="text-center py-4">
-                  Tidak terdapat data
-                </TableComponents.TableCell>
-              </TableComponents.TableRow>
-            )}
-          </TableComponents.TableBody>
-        </TableComponents.Table>
-      </div>
-    </div>
-  );
-}
+// function LecturerList({ filteredData }: TableContentProps) {
+//   return (
+//     <div className="border rounded-lg overflow-hidden">
+//       <div className="overflow-x-auto">
+//         <TableComponents.Table>
+//           <TableComponents.TableHeader className="bg-gray-100 sticky top-0">
+//             <TableComponents.TableRow>
+//               <TableComponents.TableCell>Dosen</TableComponents.TableCell>
+//               <TableComponents.TableCell>Progress</TableComponents.TableCell>
+//             </TableComponents.TableRow>
+//           </TableComponents.TableHeader>
+//           <TableComponents.TableBody>
+//             {filteredData.length > 0 ? (
+//               filteredData.map((row) => (
+//                 <TableComponents.TableRow key={row.id_data}>
+//                   <TableComponents.TableCell className='w-1/6'>{row.penulis.nama}</TableComponents.TableCell>
+//                   <TableComponents.TableCell className="flex items-center ">
+//                     {/* <Progress value={(row.count / 3) * 100} className="w-full h-4 bg-green-500 mr-2" />
+//                     <span>{row.count}</span> */}
+//                     {row.penulis.nidn}
+//                   </TableComponents.TableCell>
+//                 </TableComponents.TableRow>
+//               ))
+//             ) : (
+//               <TableComponents.TableRow>
+//                 <TableComponents.TableCell colSpan={6} className="text-center py-4">
+//                   Tidak terdapat data
+//                 </TableComponents.TableCell>
+//               </TableComponents.TableRow>
+//             )}
+//           </TableComponents.TableBody>
+//         </TableComponents.Table>
+//       </div>
+//     </div>
+//   );
+// }
 
 
 function TableContent({ filteredData }: TableContentProps) {
@@ -198,7 +198,7 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
-      <LecturerList   filteredData={filteredData} />
+      {/* <LecturerList   filteredData={filteredData} /> */}
       <TableContent filteredData={filteredData} />
     </div>
   );
