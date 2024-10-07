@@ -17,7 +17,7 @@ export default function UploadDosenModal() {
           <DialogHeader>
             <DialogTitle>Tambah Dosen</DialogTitle>
             <DialogDescription>
-              Upload file .csv untuk menambahkan dosen ke dalam database.
+              Upload file .csv untuk menambahkan dosen ke dalam database
             </DialogDescription>
           </DialogHeader>
           <FileUploadForm closeModal={() => setOpen(false)} />
