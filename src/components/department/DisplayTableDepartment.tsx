@@ -12,7 +12,16 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useParams } from 'next/navigation';
-import { Progress } from '../ui/progress';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 
 type DataItem = {
   id_data: number;
@@ -27,6 +36,17 @@ type DataItem = {
 interface TableContentProps {
   filteredData: DataItem[];
 }
+
+const chartConfig = {
+  nasional: {
+    label: "Nasional",
+    color: "#ccffcc",
+  },
+  internasional: {
+    label: "Internasional",
+    color: "#64C240",
+  },
+} satisfies ChartConfig;
 
 interface LecturerListProps {
   data: DataItem[];
@@ -49,8 +69,6 @@ interface LecturerListProps {
 //                 <TableComponents.TableRow key={row.id_data}>
 //                   <TableComponents.TableCell className='w-1/6'>{row.penulis.nama}</TableComponents.TableCell>
 //                   <TableComponents.TableCell className="flex items-center ">
-//                     {/* <Progress value={(row.count / 3) * 100} className="w-full h-4 bg-green-500 mr-2" />
-//                     <span>{row.count}</span> */}
 //                     {row.penulis.nidn}
 //                   </TableComponents.TableCell>
 //                 </TableComponents.TableRow>
@@ -69,6 +87,55 @@ interface LecturerListProps {
 //   );
 // }
 
+function LecturerList({ filteredData }: TableContentProps) {
+  return (
+    <div className="border rounded-lg overflow-hidden">
+      <div className="overflow-x-auto">
+        <Card>
+        <CardHeader>
+          {/* <CardTitle>Bar Chart - Horizontal</CardTitle>
+          <CardDescription>January - June 2024</CardDescription> */}
+        </CardHeader>
+        <CardContent>
+          <ChartContainer config={chartConfig}>
+            <BarChart
+              accessibilityLayer
+              data={filteredData}
+              layout="vertical"
+              margin={{
+                left: -20,
+              }}
+            >
+              <XAxis type="number" dataKey="desktop" hide />
+              <YAxis
+                dataKey="month"
+                type="category"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+                tickFormatter={(value) => value.slice(0, 3)}
+              />
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Bar dataKey="desktop" fill="var(--color-desktop)" radius={5} />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+        {/* <CardFooter className="flex-col items-start gap-2 text-sm">
+          <div className="flex gap-2 font-medium leading-none">
+            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+          </div>
+          <div className="leading-none text-muted-foreground">
+            Showing total visitors for the last 6 months
+          </div>
+        </CardFooter> */}
+      </Card>
+      </div>
+    </div>
+  );
+}
 
 function TableContent({ filteredData }: TableContentProps) {
   return (
@@ -198,7 +265,7 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
-      {/* <LecturerList   filteredData={filteredData} /> */}
+      <LecturerList   filteredData={filteredData} />
       <TableContent filteredData={filteredData} />
     </div>
   );
