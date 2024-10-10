@@ -31,11 +31,21 @@ type DataItem = {
   department: { nama: string };
   tingkat: string;
   url: string;
-  count: number;
+  totalPengabdian: number;
+  totalPenelitian: number;
 };
 interface TableContentProps {
   filteredData: DataItem[];
 }
+
+type ChartData = {
+  year: number;
+  pengabdianNasional: number;
+  pengabdianInternasional: number;
+  penelitianNasional: number;
+  penelitianInternasional: number;
+};
+
 
 const chartConfig = {
   nasional: {
@@ -48,95 +58,56 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-interface LecturerListProps {
-  data: DataItem[];
-}
-
-// function LecturerList({ filteredData }: TableContentProps) {
-//   return (
-//     <div className="border rounded-lg overflow-hidden">
-//       <div className="overflow-x-auto">
-//         <TableComponents.Table>
-//           <TableComponents.TableHeader className="bg-gray-100 sticky top-0">
-//             <TableComponents.TableRow>
-//               <TableComponents.TableCell>Dosen</TableComponents.TableCell>
-//               <TableComponents.TableCell>Progress</TableComponents.TableCell>
-//             </TableComponents.TableRow>
-//           </TableComponents.TableHeader>
-//           <TableComponents.TableBody>
-//             {filteredData.length > 0 ? (
-//               filteredData.map((row) => (
-//                 <TableComponents.TableRow key={row.id_data}>
-//                   <TableComponents.TableCell className='w-1/6'>{row.penulis.nama}</TableComponents.TableCell>
-//                   <TableComponents.TableCell className="flex items-center ">
-//                     {row.penulis.nidn}
-//                   </TableComponents.TableCell>
-//                 </TableComponents.TableRow>
-//               ))
-//             ) : (
-//               <TableComponents.TableRow>
-//                 <TableComponents.TableCell colSpan={6} className="text-center py-4">
-//                   Tidak terdapat data
-//                 </TableComponents.TableCell>
-//               </TableComponents.TableRow>
-//             )}
-//           </TableComponents.TableBody>
-//         </TableComponents.Table>
-//       </div>
-//     </div>
-//   );
-// }
-
-function LecturerList({ filteredData }: TableContentProps) {
+function DepartmentDataChart({ title, body, chartData, dataKeyNational, dataKeyInternational }: {
+  title: string;
+  body: string | number;
+  chartData: ChartData[];
+  dataKeyNational: string;
+  dataKeyInternational: string;
+}) {
   return (
-    <div className="border rounded-lg overflow-hidden">
-      <div className="overflow-x-auto">
-        <Card>
-        <CardHeader>
-          {/* <CardTitle>Bar Chart - Horizontal</CardTitle>
-          <CardDescription>January - June 2024</CardDescription> */}
-        </CardHeader>
-        <CardContent>
-          <ChartContainer config={chartConfig}>
-            <BarChart
-              accessibilityLayer
-              data={filteredData}
-              layout="vertical"
-              margin={{
-                left: -20,
-              }}
-            >
-              <XAxis type="number" dataKey="desktop" hide />
-              <YAxis
-                dataKey="month"
-                type="category"
-                tickLine={false}
-                tickMargin={10}
-                axisLine={false}
-                tickFormatter={(value) => value.slice(0, 3)}
-              />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent hideLabel />}
-              />
-              <Bar dataKey="desktop" fill="var(--color-desktop)" radius={5} />
-            </BarChart>
-          </ChartContainer>
-        </CardContent>
-        {/* <CardFooter className="flex-col items-start gap-2 text-sm">
-          <div className="flex gap-2 font-medium leading-none">
-            Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+    <div className="flex">
+      <Card>
+        <div className='flex p-5'>      
+          {/* <div className='border-r border-solid border-black'>
+            <CardTitle>{title}</CardTitle>
+            <CardHeader>
+              <div className="">{body}</div>
+            </CardHeader>
+          </div> */}
+          <div>
+            <CardContent>
+              <div className=''>
+                <ChartContainer config={chartConfig} className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData} layout='vertical' margin={{ left: -20,}}>
+                      <CartesianGrid vertical={false} />
+                      <XAxis
+                        // type="number" dataKey="desktop" hide
+                      />
+                      <YAxis 
+                        dataKey="year"
+                        type='category'
+                        tickLine={false}
+                        tickMargin={10}
+                        axisLine={false}
+                        // tickFormatter={(value) => value.slice(0, 3)}
+                      />
+                      <Tooltip content={<ChartTooltipContent />} />
+                      <ChartLegend content={<ChartLegendContent />} />
+                      <Bar dataKey={dataKeyNational} fill="var(--color-nasional)" radius={4} />
+                      <Bar dataKey={dataKeyInternational} fill="var(--color-internasional)" radius={4} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </ChartContainer>
+              </div>
+            </CardContent>
           </div>
-          <div className="leading-none text-muted-foreground">
-            Showing total visitors for the last 6 months
-          </div>
-        </CardFooter> */}
+        </div>
       </Card>
-      </div>
     </div>
   );
 }
-
 function TableContent({ filteredData }: TableContentProps) {
   return (
     <div className="border rounded-lg overflow-hidden">
@@ -188,9 +159,9 @@ function TableContent({ filteredData }: TableContentProps) {
 export default function ResearchDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTable, setSelectedTable] = useState('penelitian');
-  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[], dosen: DataItem[] }>({ 
-    penelitian: [], pengabdian: [], dosen:[] });
-  const [dosenData, setDosenData] = useState<DataItem[]>([]);
+  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[], dosen: DataItem[],}>({ 
+    penelitian: [], pengabdian: [], dosen:[],});
+  // const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
@@ -209,6 +180,7 @@ export default function ResearchDashboard() {
           pengabdian: result.pengabdian.data,
           dosen: result.dosen,
         });
+        // setDashboardData(result.dashboardData);
         setError(null);
       } catch (err) {
         setError('An error occurred while fetching data');
@@ -265,8 +237,14 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
-      <LecturerList   filteredData={filteredData} />
       <TableContent filteredData={filteredData} />
+      <DepartmentDataChart
+        title="Penelitian"
+        body={data.penelitian.length}
+        chartData={data.penelitian}
+        dataKeyNational="penelitianNasional"
+        dataKeyInternational="penelitianInternasional"
+      />
     </div>
   );
 }

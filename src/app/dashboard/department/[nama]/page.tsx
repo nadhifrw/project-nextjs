@@ -1,5 +1,6 @@
 import DisplayDataDepartment from "@/components/department/DisplayDataDepartment";
 import DisplayTableDepartment from "@/components/department/DisplayTableDepartment";
+import DisplayDataDosenDepartment from "@/components/department/DisplayDataDosenDepartment";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 
@@ -31,6 +32,9 @@ export default async function DepartmentDetailPage({ params }: { params: { nama:
         <div>
           <DisplayDataDepartment />
         </div>
+        {/* <div>
+          <DisplayDataDosenDepartment />
+        </div> */}
         <div>
           <DisplayTableDepartment/>
         </div>
