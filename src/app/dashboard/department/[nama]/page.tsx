@@ -32,9 +32,6 @@ export default async function DepartmentDetailPage({ params }: { params: { nama:
         <div>
           <DisplayDataDepartment />
         </div>
-        {/* <div>
-          <DisplayDataDosenDepartment />
-        </div> */}
         <div>
           <DisplayTableDepartment/>
         </div>

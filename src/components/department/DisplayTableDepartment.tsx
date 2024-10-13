@@ -1,5 +1,4 @@
 'use client';
-
 import React, { useState, useEffect } from 'react'
 import * as TableComponents from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
@@ -17,10 +16,6 @@ import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTool
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card"
 
 type DataItem = {
@@ -31,84 +26,25 @@ type DataItem = {
   department: { nama: string };
   tingkat: string;
   url: string;
+};
+
+type LecturerStat = {
+  name: string;
+  pengabdian: number;
+  penelitian: number;
+  total: number;
+};
+
+type DashboardData = {
+  lecturerStats: LecturerStat[];
+  totalDosen: number;
   totalPengabdian: number;
   totalPenelitian: number;
-};
-interface TableContentProps {
-  filteredData: DataItem[];
-}
-
-type ChartData = {
-  year: number;
-  pengabdianNasional: number;
-  pengabdianInternasional: number;
-  penelitianNasional: number;
-  penelitianInternasional: number;
+  pengabdian: { data: DataItem[] };
+  penelitian: { data: DataItem[] };
 };
 
-
-const chartConfig = {
-  nasional: {
-    label: "Nasional",
-    color: "#ccffcc",
-  },
-  internasional: {
-    label: "Internasional",
-    color: "#64C240",
-  },
-} satisfies ChartConfig;
-
-function DepartmentDataChart({ title, body, chartData, dataKeyNational, dataKeyInternational }: {
-  title: string;
-  body: string | number;
-  chartData: ChartData[];
-  dataKeyNational: string;
-  dataKeyInternational: string;
-}) {
-  return (
-    <div className="flex">
-      <Card>
-        <div className='flex p-5'>      
-          {/* <div className='border-r border-solid border-black'>
-            <CardTitle>{title}</CardTitle>
-            <CardHeader>
-              <div className="">{body}</div>
-            </CardHeader>
-          </div> */}
-          <div>
-            <CardContent>
-              <div className=''>
-                <ChartContainer config={chartConfig} className="h-[200px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartData} layout='vertical' margin={{ left: -20,}}>
-                      <CartesianGrid vertical={false} />
-                      <XAxis
-                        // type="number" dataKey="desktop" hide
-                      />
-                      <YAxis 
-                        dataKey="year"
-                        type='category'
-                        tickLine={false}
-                        tickMargin={10}
-                        axisLine={false}
-                        // tickFormatter={(value) => value.slice(0, 3)}
-                      />
-                      <Tooltip content={<ChartTooltipContent />} />
-                      <ChartLegend content={<ChartLegendContent />} />
-                      <Bar dataKey={dataKeyNational} fill="var(--color-nasional)" radius={4} />
-                      <Bar dataKey={dataKeyInternational} fill="var(--color-internasional)" radius={4} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </ChartContainer>
-              </div>
-            </CardContent>
-          </div>
-        </div>
-      </Card>
-    </div>
-  );
-}
-function TableContent({ filteredData }: TableContentProps) {
+function TableContent({ filteredData }: { filteredData: DataItem[] }) {
   return (
     <div className="border rounded-lg overflow-hidden">
       <div className="overflow-x-auto">
@@ -156,31 +92,64 @@ function TableContent({ filteredData }: TableContentProps) {
   );
 }
 
+function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: DashboardData; selectedType: 'penelitian' | 'pengabdian' }) {
+  const chartData = dashboardData.lecturerStats.map(stat => ({
+    name: stat.name,
+    value: stat[selectedType]
+  })).sort((a, b) => b.value - a.value);
+
+  return (
+    <Card className="w-full">
+      <CardContent>
+        <h2 className="text-xl font-bold mb-4">Daftar Dosen</h2>
+        <ResponsiveContainer width="100%" height={400}>
+          <BarChart
+            data={chartData}
+            layout="vertical"
+            margin={{ left: 150, right: 20, top: 20, bottom: 20 }}
+          >
+            <CartesianGrid horizontal={false} />
+            <XAxis className="text-sm" type="number" />
+            <YAxis
+            className='text-sm'
+              dataKey="name"
+              type="category"
+              width={140}
+              tickLine={false}
+              axisLine={false}
+            />
+            <Tooltip />
+            <Bar
+              dataKey="value"
+              fill={selectedType === 'penelitian' ? "#8884d8" : "#82ca9d"}
+              name={selectedType === 'penelitian' ? "Penelitian" : "Pengabdian"}
+            />
+          </BarChart>
+        </ResponsiveContainer>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function ResearchDashboard() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedTable, setSelectedTable] = useState('penelitian');
-  const [data, setData] = useState<{ penelitian: DataItem[], pengabdian: DataItem[], dosen: DataItem[],}>({ 
-    penelitian: [], pengabdian: [], dosen:[],});
-  // const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [selectedType, setSelectedType] = useState<'penelitian' | 'pengabdian'>('penelitian');
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const params = useParams();
   const nama = params.nama as string;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/department/${nama}`); // Adjust this URL to match your API route
+        const response = await fetch(`/api/department/${nama}`);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
         const result = await response.json();
-        setData({
-          penelitian: result.penelitian.data,
-          pengabdian: result.pengabdian.data,
-          dosen: result.dosen,
-        });
-        // setDashboardData(result.dashboardData);
+        setDashboardData(result);
         setError(null);
       } catch (err) {
         setError('An error occurred while fetching data');
@@ -193,19 +162,20 @@ export default function ResearchDashboard() {
     fetchData();
   }, [nama]);
 
-  const filteredData = data[selectedTable as keyof typeof data].filter(item =>
-    item.judul.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
+  if (!dashboardData) return <div>No data available</div>;
+
+  const filteredData = dashboardData[selectedType].data.filter(item =>
+    item.judul.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="w-full space-y-4">
       <div className="flex justify-between items-center">
-        <Select onValueChange={(value) => setSelectedTable(value)} defaultValue="penelitian">
+        <Select onValueChange={(value: 'penelitian' | 'pengabdian') => setSelectedType(value)} defaultValue="penelitian">
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select table" />
+            <SelectValue placeholder="Select type" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="penelitian">Penelitian</SelectItem>
@@ -237,15 +207,8 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
+      <LecturerStatsChart dashboardData={dashboardData} selectedType={selectedType} />
       <TableContent filteredData={filteredData} />
-      <DepartmentDataChart
-        title="Penelitian"
-        body={data.penelitian.length}
-        chartData={data.penelitian}
-        dataKeyNational="penelitianNasional"
-        dataKeyInternational="penelitianInternasional"
-      />
     </div>
   );
 }
-

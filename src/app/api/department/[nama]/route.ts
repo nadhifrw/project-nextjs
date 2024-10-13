@@ -64,6 +64,21 @@ export async function GET(request: Request, { params }: { params: { nama: string
       year: parseInt(year),
       ...data,
     }));
+
+    const lecturerStats = department.dosen.map(dosen => {
+      const pengabdianCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn).length;
+      const penelitianCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn).length;
+
+      return {
+        name: dosen.nama,
+        pengabdian: pengabdianCount,
+        penelitian: penelitianCount,
+        total: pengabdianCount + penelitianCount
+      };
+    });
+
+    // Sort lecturers by total count in descending order
+    lecturerStats.sort((a, b) => b.total - a.total);
     
     const formattedPengabdianData = department.pengabdian.map(p => ({
       id_data: p.id_data,
@@ -86,6 +101,7 @@ export async function GET(request: Request, { params }: { params: { nama: string
     }));
 
     const dashboardData = {
+      lecturerStats,
       yearlyStats: formattedYearlyStats,
       totalDosen: department.dosen.length,
       totalPengabdian: department.pengabdian.length,
@@ -104,3 +120,65 @@ export async function GET(request: Request, { params }: { params: { nama: string
     return NextResponse.json({ error: 'An error occurred while fetching data' }, { status: 500 });
   }
 }
+
+// import prisma from '@/lib/prisma';
+// import { NextResponse } from 'next/server';
+
+// export async function GET(request: Request, { params }: { params: { nama: string } }) {
+//   try {
+//     const departmentName = decodeURIComponent(params.nama);
+
+//     if (!departmentName) {
+//       return NextResponse.json({ error: 'Department name is required' }, { status: 400 });
+//     }
+
+//     const department = await prisma.department.findUnique({
+//       where: { nama: departmentName },
+//       include: {
+//         dosen: true,
+//         pengabdian: {
+//           include: {
+//             penulis: true,
+//           }
+//         },
+//         penelitian: {
+//           include: {
+//             penulis: true,
+//           }
+//         },
+//       },
+//     });
+
+//     if (!department) {
+//       return NextResponse.json({ error: 'Department not found' }, { status: 404 });
+//     }
+
+//     // Aggregate data by lecturer
+//     const lecturerStats = department.dosen.map(dosen => {
+//       const pengabdianCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn).length;
+//       const penelitianCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn).length;
+
+//       return {
+//         name: dosen.nama,
+//         pengabdian: pengabdianCount,
+//         penelitian: penelitianCount,
+//         total: pengabdianCount + penelitianCount
+//       };
+//     });
+
+//     // Sort lecturers by total count in descending order
+//     lecturerStats.sort((a, b) => b.total - a.total);
+
+//     const dashboardData = {
+//       lecturerStats,
+//       totalDosen: department.dosen.length,
+//       totalPengabdian: department.pengabdian.length,
+//       totalPenelitian: department.penelitian.length,
+//     };
+
+//     return NextResponse.json(dashboardData);
+//   } catch (error) {
+//     console.error('Error fetching data:', error);
+//     return NextResponse.json({ error: 'An error occurred while fetching data' }, { status: 500 });
+//   }
+// }
