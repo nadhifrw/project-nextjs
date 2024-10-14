@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useParams } from 'next/navigation';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import {
   Card,
@@ -28,11 +28,19 @@ type DataItem = {
   url: string;
 };
 
+// type LecturerStat = {
+//   name: string;
+//   pengabdian: number;
+//   penelitian: number;
+//   total: number;
+// };
+
 type LecturerStat = {
   name: string;
-  pengabdian: number;
-  penelitian: number;
-  total: number;
+  pengabdianNasional: number;
+  pengabdianInternasional: number;
+  penelitianNasional: number;
+  penelitianInternasional: number;
 };
 
 type DashboardData = {
@@ -43,6 +51,18 @@ type DashboardData = {
   pengabdian: { data: DataItem[] };
   penelitian: { data: DataItem[] };
 };
+
+// const chartConfig = {
+//   nasional: {
+//     label: "Nasional",
+//     color: "#ccffcc",
+//   },
+//   internasional: {
+//     label: "Internasional",
+//     color: "#64C240",
+//   },
+// } satisfies ChartConfig;
+
 
 function TableContent({ filteredData }: { filteredData: DataItem[] }) {
   return (
@@ -95,13 +115,26 @@ function TableContent({ filteredData }: { filteredData: DataItem[] }) {
 function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: DashboardData; selectedType: 'penelitian' | 'pengabdian' }) {
   const chartData = dashboardData.lecturerStats.map(stat => ({
     name: stat.name,
-    value: stat[selectedType]
-  })).sort((a, b) => b.value - a.value);
+    national: stat[`${selectedType}Nasional`],
+    international: stat[`${selectedType}Internasional`],
+    total: stat[`${selectedType}Nasional`] + stat[`${selectedType}Internasional`]
+  })).sort((a, b) => b.total - a.total);
+
+  const colors = {
+    penelitian: {
+      national: "#8884d8",  // Light purple
+      international: "#4834d4"  // Dark purple
+    },
+    pengabdian: {
+      national: "#82ca9d",  // Light green
+      international: "#3cb371"  // Dark green
+    }
+  };
 
   return (
     <Card className="w-full">
       <CardContent>
-        <h2 className="text-xl font-bold mb-4">Daftar Dosen</h2>
+        <h2 className="text-xl font-bold mb-4">Daftar Dosen - {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}</h2>
         <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={chartData}
@@ -109,9 +142,9 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
             margin={{ left: 150, right: 20, top: 20, bottom: 20 }}
           >
             <CartesianGrid horizontal={false} />
-            <XAxis className="text-sm" type="number" />
+            <XAxis type="number" />
             <YAxis
-            className='text-sm'
+              className='text-sm'
               dataKey="name"
               type="category"
               width={140}
@@ -119,10 +152,18 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
               axisLine={false}
             />
             <Tooltip />
+            <Legend />
             <Bar
-              dataKey="value"
-              fill={selectedType === 'penelitian' ? "#8884d8" : "#82ca9d"}
-              name={selectedType === 'penelitian' ? "Penelitian" : "Pengabdian"}
+              dataKey="national"
+              fill={colors[selectedType].national}
+              name="Nasional"
+              stackId="a"
+            />
+            <Bar
+              dataKey="international"
+              fill={colors[selectedType].international}
+              name="Internasional"
+              stackId="a"
             />
           </BarChart>
         </ResponsiveContainer>

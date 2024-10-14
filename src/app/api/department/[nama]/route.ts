@@ -66,17 +66,32 @@ export async function GET(request: Request, { params }: { params: { nama: string
     }));
 
     const lecturerStats = department.dosen.map(dosen => {
-      const pengabdianCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn).length;
-      const penelitianCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn).length;
+      const pengabdianNasionalCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn && p.tingkat.toLowerCase() !== 'internasional').length;
+      const pengabdianInternasionalCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn && p.tingkat.toLowerCase() === 'internasional').length;
+      const penelitianNasionalCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn && p.tingkat.toLowerCase() !== 'internasional').length;
+      const penelitianInternasionalCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn && p.tingkat.toLowerCase() === 'internasional').length;
 
       return {
-        name: dosen.nama,
-        pengabdian: pengabdianCount,
-        penelitian: penelitianCount,
-        total: pengabdianCount + penelitianCount
+      name: dosen.nama,
+      pengabdianNasional: pengabdianNasionalCount,
+      pengabdianInternasional: pengabdianInternasionalCount,
+      penelitianNasional: penelitianNasionalCount,
+      penelitianInternasional: penelitianInternasionalCount,
+      total: pengabdianNasionalCount + pengabdianInternasionalCount + penelitianNasionalCount + penelitianInternasionalCount
       };
     });
 
+    // const lecturerStats = department.dosen.map(dosen => {
+    //   const pengabdianCount = department.pengabdian.filter(p => p.penulis.nidn === dosen.nidn).length;
+    //   const penelitianCount = department.penelitian.filter(p => p.penulis.nidn === dosen.nidn).length;
+
+    //   return {
+    //     name: dosen.nama,
+    //     pengabdian: pengabdianCount,
+    //     penelitian: penelitianCount,
+    //     total: pengabdianCount + penelitianCount
+    //   };
+    // });
     // Sort lecturers by total count in descending order
     lecturerStats.sort((a, b) => b.total - a.total);
     
