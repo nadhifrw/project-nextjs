@@ -63,7 +63,7 @@ export async function GET(
         // Add other dosen fields as needed
       },
       penelitian: dosen.penelitian.map(p => ({
-        id_data: p.id,
+        id_data: p.id_data,
         judul: p.judul,
         penulisExternal: p.penulisExternal,
         penulisNidn: p.penulisNidn,
@@ -72,7 +72,7 @@ export async function GET(
         tahun: p.tahun,
       })),
       pengabdian: dosen.pengabdian.map(p => ({
-        id_data: p.id,
+        id_data: p.id_data,
         judul: p.judul,
         penulisExternal: p.penulisExternal,
         penulisNidn: p.penulisNidn,

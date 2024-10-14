@@ -11,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useParams } from 'next/navigation';
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, Legend, LabelList } from 'recharts';
 import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import {
   Card,
@@ -52,16 +52,16 @@ type DashboardData = {
   penelitian: { data: DataItem[] };
 };
 
-// const chartConfig = {
-//   nasional: {
-//     label: "Nasional",
-//     color: "#ccffcc",
-//   },
-//   internasional: {
-//     label: "Internasional",
-//     color: "#64C240",
-//   },
-// } satisfies ChartConfig;
+const chartConfig = {
+  nasional: {
+    label: "Nasional",
+    color: "#ccffcc",
+  },
+  internasional: {
+    label: "Internasional",
+    color: "#64C240",
+  },
+} satisfies ChartConfig;
 
 
 function TableContent({ filteredData }: { filteredData: DataItem[] }) {
@@ -120,29 +120,40 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
     total: stat[`${selectedType}Nasional`] + stat[`${selectedType}Internasional`]
   })).sort((a, b) => b.total - a.total);
 
+  // const colors = {
+  //   penelitian: {
+  //     national: "#8884d8",  // Light purple
+  //     international: "#4834d4"  // Dark purple
+  //   },
+  //   pengabdian: {
+  //     national: "#82ca9d",  // Light green
+  //     international: "#3cb371"  // Dark green
+  //   }
+  // };
+  
   const colors = {
     penelitian: {
-      national: "#8884d8",  // Light purple
-      international: "#4834d4"  // Dark purple
+      national: "#ccffcc",  // Light purple
+      international: "#64C240"  // Dark purple
     },
     pengabdian: {
-      national: "#82ca9d",  // Light green
-      international: "#3cb371"  // Dark green
+      national: "#ccffcc",  // Light green
+      international: "#64C240"  // Dark green
     }
   };
 
   return (
     <Card className="w-full">
-      <CardContent>
+      <CardContent className='flex flex-col'>
         <h2 className="text-xl font-bold mb-4">Daftar Dosen - {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}</h2>
-        <ResponsiveContainer width="100%" height={400}>
+        <ResponsiveContainer width="100%" height={150} className={"border"}>
           <BarChart
             data={chartData}
             layout="vertical"
-            margin={{ left: 150, right: 20, top: 20, bottom: 20 }}
+            margin={{ left: 40, right: 40, top: 20, bottom: 20 }}
           >
-            <CartesianGrid horizontal={false} />
-            <XAxis type="number" />
+            <CartesianGrid horizontal={false}/>
+            <XAxis type="number" hide/>
             <YAxis
               className='text-sm'
               dataKey="name"
@@ -151,20 +162,24 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
               tickLine={false}
               axisLine={false}
             />
-            <Tooltip />
-            <Legend />
+            <Tooltip wrapperStyle={{ fontSize: '12px', padding:'4px'}} />
+            {/* <Legend /> */}
             <Bar
               dataKey="national"
               fill={colors[selectedType].national}
               name="Nasional"
               stackId="a"
+              barSize={20}
             />
             <Bar
               dataKey="international"
               fill={colors[selectedType].international}
               name="Internasional"
               stackId="a"
-            />
+              barSize={20}
+            >
+              <LabelList dataKey="total" position="right" className='text-sm' />
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </CardContent>
