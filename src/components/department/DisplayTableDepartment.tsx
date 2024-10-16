@@ -158,7 +158,7 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
               className='text-sm'
               dataKey="name"
               type="category"
-              width={140}
+              width={200}
               tickLine={false}
               axisLine={false}
             />
