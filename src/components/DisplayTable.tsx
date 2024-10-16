@@ -84,10 +84,3 @@ export function TableDepartment({ departments }: DepartmentTableProps ) {
   );
 }
 
-// export default function Table(){
-//     return (
-//         <div>
-//             <TableDepartment />
-//         </div>
-//     )
-// }

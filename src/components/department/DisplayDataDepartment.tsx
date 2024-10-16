@@ -41,8 +41,7 @@ function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyIn
   dataKeyInternational: string;
 }) {
   return (
-    <div className="flex">
-      <Card>
+      <Card className=''>
         <div className='flex p-5'>      
           <div className='border-r border-solid border-black'>
             <CardTitle>{title}</CardTitle>
@@ -76,14 +75,12 @@ function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyIn
           </div>
         </div>
       </Card>
-    </div>
   );
 }
 
 function DashboardCardDosen({ count }: { count: number }) {
   return (
-    <div className="flex">
-      <Card>
+      <Card className='flex-1 min-w-[200px] m-2'>
         <CardTitle>
           <div className="pt-6">
             Dosen
@@ -95,7 +92,6 @@ function DashboardCardDosen({ count }: { count: number }) {
           </div>
         </CardHeader>
       </Card>
-    </div>
   );
 }
 
@@ -141,21 +137,23 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <div className="flex flex-row">
-        <DashboardCardChart
-          title="Pengabdian"
-          body={dashboardData.totalPengabdian}
-          chartData={dashboardData.yearlyStats}
-          dataKeyNational="pengabdianNasional"
-          dataKeyInternational="pengabdianInternasional"
-        />
-        <DashboardCardChart
-          title="Penelitian"
-          body={dashboardData.totalPenelitian}
-          chartData={dashboardData.yearlyStats}
-          dataKeyNational="penelitianNasional"
-          dataKeyInternational="penelitianInternasional"
-        />
+      <div className="flex flex-warp -m-2">
+        <div className='flex flex-col'>
+          <DashboardCardChart
+            title="Pengabdian"
+            body={dashboardData.totalPengabdian}
+            chartData={dashboardData.yearlyStats}
+            dataKeyNational="pengabdianNasional"
+            dataKeyInternational="pengabdianInternasional"
+          />
+          <DashboardCardChart
+            title="Penelitian"
+            body={dashboardData.totalPenelitian}
+            chartData={dashboardData.yearlyStats}
+            dataKeyNational="penelitianNasional"
+            dataKeyInternational="penelitianInternasional"
+          />
+        </div>
         <DashboardCardDosen count={dashboardData.totalDosen} />
       </div>
     </div>

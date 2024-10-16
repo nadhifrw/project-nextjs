@@ -263,8 +263,10 @@ export default function ResearchDashboard() {
           />
         </div>
       </div>
+      <div className=''>
       <LecturerStatsChart dashboardData={dashboardData} selectedType={selectedType} />
       <TableContent filteredData={filteredData} />
+      </div>
     </div>
   );
 }
