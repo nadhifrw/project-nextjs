@@ -2,9 +2,10 @@
 'use client'
 
 import React from 'react'
-import AddDataButton from '@/components/AddDataButton'
+import AddDataButton from '@/components/AddDataPenelitianButton'
 import DisplayData from '@/components/DisplayData'
 import { TableDepartment } from '@/components/DisplayTable'
+import AddDataPengabdian from '@/components/AddDataPengabdianButton'
 
 type Department = {
   id_department: number
@@ -25,8 +26,13 @@ export default function DashboardClient({ initialDepartments }: DashboardClientP
   return (
     <main>
       <div className='border'>
-        <div>
-          <AddDataButton />
+        <div className='flex flex-row m-4'>
+          <div className='mr-2'>
+            <AddDataPengabdian />
+          </div>
+          <div className='ml-2'>
+            <AddDataButton />
+          </div>  
         </div>
         <div className='flex items-center justify-center'>
           <DisplayData />

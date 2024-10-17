@@ -3,11 +3,11 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import Papa from 'papaparse';
 
-interface FileUploadFormProps {
+interface PengabdianFileUploadFormProps {
   closeModal: () => void;
 }
 
-export function FileUploadForm({ closeModal }: FileUploadFormProps) {
+export function PengabdianFileUploadForm({ closeModal }: PengabdianFileUploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,21 +21,21 @@ export function FileUploadForm({ closeModal }: FileUploadFormProps) {
       alert('Please upload a .csv file');
       return;
     }
-  
+
     Papa.parse(file, {
       header: true,
       complete: async function(results) {
         console.log("Parsed Results:", results.data);
-  
+
         try {
-          const response = await fetch('/api/upload-dosen', {
+          const response = await fetch('/api/upload-pengabdian', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(results.data),
           });
-  
+
           if (response.ok) {
             const responseData = await response.json();
             alert(`File processed successfully.\nSuccessful: ${responseData.results.success}\nSkipped: ${responseData.results.skipped}\nErrors: ${responseData.results.errors.length}`);
