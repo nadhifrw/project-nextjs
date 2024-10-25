@@ -25,6 +25,7 @@ type Pengabdian = {
 };
 
 type Dosen = {
+  dosen: any;
   nidn: string;
   nama: string;
   department: {
