@@ -15,6 +15,7 @@ type DataItem = {
 };
 
 type DosenData = {
+  dosen: any;
   nidn: string;
   nama: string;
   penelitian: DataItem[];
