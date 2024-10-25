@@ -24,7 +24,7 @@ export async function GET(
     }
 
     // Initialize yearly stats
-    const yearlyStats = {};
+    const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
     for (let year = startYear; year <= currentYear; year++) {
       yearlyStats[year] = {
         pengabdianNasional: 0,

@@ -32,7 +32,7 @@ export async function GET(request: Request, { params }: { params: { nama: string
 
     const currentYear = new Date().getFullYear();
     const startYear = 2019;
-    const yearlyStats = {};
+    const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
 
     for (let year = startYear; year <= currentYear; year++) {
       yearlyStats[year] = {
