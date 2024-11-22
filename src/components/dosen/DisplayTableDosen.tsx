@@ -151,11 +151,11 @@ export default function Table() {
 
   return (
     <div className="space-y-8">
-      <div>
+      <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
         <h2 className="text-2xl font-bold mb-4">Penelitian</h2>
         <DataTable dataType="penelitian" />
       </div>
-      <div>
+      <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
         <h2 className="text-2xl font-bold mb-4">Pengabdian</h2>
         <DataTable dataType="pengabdian" />
       </div>

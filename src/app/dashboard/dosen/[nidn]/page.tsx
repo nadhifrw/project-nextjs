@@ -36,14 +36,6 @@ type Dosen = {
 };
 
 export default function DosenDetailPage() {
-  // const dosen = await prisma.dosen.findUnique({
-  //   where: { nidn: params.nidn },
-  //   include: { department: true }
-  // });
-
-  // if (!dosen) {
-  //   notFound();
-  // }
   const [data, setDosen] = useState<Dosen | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -89,7 +81,7 @@ export default function DosenDetailPage() {
                 </div>
             </button>
         </Link>
-        <div className='border'>
+        <div className=''>
             <div >
                 <DisplayDataDosen/>
             </div>
@@ -97,7 +89,6 @@ export default function DosenDetailPage() {
                 <DisplayTableDosen/>
             </div>
         </div>
-        
     </div>
   );
 }

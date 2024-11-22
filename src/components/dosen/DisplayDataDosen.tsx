@@ -41,7 +41,7 @@ function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyIn
 }) {
   return (
     <div className="flex">
-      <Card>
+      <Card className='flex-1 min-w-[300px] m-2'>
         <div className='flex p-5'>      
           <div className='border-r border-solid border-black'>
             <CardTitle>{title}</CardTitle>
@@ -79,24 +79,24 @@ function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyIn
   );
 }
 
-function DashboardCardDosen({ count }: { count: number }) {
-  return (
-    <div className="flex">
-      <Card>
-        <CardTitle>
-          <div className="pt-6">
-            Dosen
-          </div>
-        </CardTitle>
-        <CardHeader>
-          <div className="">
-            {count}
-          </div>
-        </CardHeader>
-      </Card>
-    </div>
-  );
-}
+// function DashboardCardDosen({ count }: { count: number }) {
+//   return (
+//     <div className="flex">
+//       <Card>
+//         <CardTitle>
+//           <div className="pt-6">
+//             Dosen
+//           </div>
+//         </CardTitle>
+//         <CardHeader>
+//           <div className="">
+//             {count}
+//           </div>
+//         </CardHeader>
+//       </Card>
+//     </div>
+//   );
+// }
 
 export default function Dashboard() {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -140,22 +140,24 @@ export default function Dashboard() {
 
   return (
     <div className="p-4">
-      <div className="flex flex-row">
-        <DashboardCardChart
-          title="Pengabdian"
-          body={dashboardData.totalPengabdian}
-          chartData={dashboardData.yearlyStats}
-          dataKeyNational="pengabdianNasional"
-          dataKeyInternational="pengabdianInternasional"
-        />
-        <DashboardCardChart
-          title="Penelitian"
-          body={dashboardData.totalPenelitian}
-          chartData={dashboardData.yearlyStats}
-          dataKeyNational="penelitianNasional"
-          dataKeyInternational="penelitianInternasional"
-        />
-        <DashboardCardDosen count={dashboardData.totalDosen} />
+      <div className='flex flex-wrap -m-2'>
+        <div className="flex xl:flex-row md:flex-col">
+          <DashboardCardChart
+            title="Pengabdian"
+            body={dashboardData.totalPengabdian}
+            chartData={dashboardData.yearlyStats}
+            dataKeyNational="pengabdianNasional"
+            dataKeyInternational="pengabdianInternasional"
+          />
+          <DashboardCardChart
+            title="Penelitian"
+            body={dashboardData.totalPenelitian}
+            chartData={dashboardData.yearlyStats}
+            dataKeyNational="penelitianNasional"
+            dataKeyInternational="penelitianInternasional"
+          />
+          {/* <DashboardCardDosen count={dashboardData.totalDosen} /> */}
+        </div>
       </div>
     </div>
   );

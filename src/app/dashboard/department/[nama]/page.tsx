@@ -28,11 +28,11 @@ export default async function DepartmentDetailPage({ params }: { params: { nama:
           </div>
         </button>
       </Link>
-      <div className='border'>
+      <div className=''>
         <div>
           <DisplayDataDepartment />
         </div>
-        <div>
+        <div className="">
           <DisplayTableDepartment/>
         </div>
       </div>

@@ -25,7 +25,7 @@ interface DashboardClientProps {
 export default function DashboardClient({ initialDepartments }: DashboardClientProps) {
   return (
     <main>
-      <div className='border'>
+      <div className=''>
         <div className='flex flex-row m-4'>
           <div className='mr-2'>
             <AddDataPengabdian />
@@ -34,7 +34,7 @@ export default function DashboardClient({ initialDepartments }: DashboardClientP
             <AddDataButton />
           </div>  
         </div>
-        <div className='flex items-center justify-center'>
+        <div className=''>
           <DisplayData />
         </div>
         <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>

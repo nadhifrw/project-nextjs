@@ -27,7 +27,7 @@ export default function Page() {
     
     return(
         <main>
-            <div className="border">
+            <div className="">
                 <div className="m-4">
                     <AddDosen/>
                 </div>

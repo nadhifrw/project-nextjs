@@ -28,13 +28,6 @@ type DataItem = {
   url: string;
 };
 
-// type LecturerStat = {
-//   name: string;
-//   pengabdian: number;
-//   penelitian: number;
-//   total: number;
-// };
-
 type LecturerStat = {
   name: string;
   pengabdianNasional: number;
@@ -120,17 +113,6 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
     total: stat[`${selectedType}Nasional`] + stat[`${selectedType}Internasional`]
   })).sort((a, b) => b.total - a.total);
 
-  // const colors = {
-  //   penelitian: {
-  //     national: "#8884d8",  // Light purple
-  //     international: "#4834d4"  // Dark purple
-  //   },
-  //   pengabdian: {
-  //     national: "#82ca9d",  // Light green
-  //     international: "#3cb371"  // Dark green
-  //   }
-  // };
-  
   const colors = {
     penelitian: {
       national: "#ccffcc",  // Light purple
@@ -143,14 +125,13 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full shadow-none border-none">
       <CardContent className='flex flex-col'>
-        <h2 className="text-xl font-bold mb-4">Daftar Dosen - {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}</h2>
-        <ResponsiveContainer width="100%" height={150} className={"border"}>
+        <ResponsiveContainer width="100%" height={400}>
           <BarChart
             data={chartData}
             layout="vertical"
-            margin={{ left: 40, right: 40, top: 20, bottom: 20 }}
+            margin={{ left: 20, right: 10, top: 20, bottom: 20 }}
           >
             <CartesianGrid horizontal={false}/>
             <XAxis type="number" hide/>
@@ -158,12 +139,11 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
               className='text-sm'
               dataKey="name"
               type="category"
-              width={200}
+              width={100}
               tickLine={false}
               axisLine={false}
             />
             <Tooltip wrapperStyle={{ fontSize: '12px', padding:'4px'}} />
-            {/* <Legend /> */}
             <Bar
               dataKey="national"
               fill={colors[selectedType].national}
@@ -228,44 +208,81 @@ export default function ResearchDashboard() {
 
   return (
     <div className="w-full space-y-4">
-      <div className="flex justify-between items-center">
+      <div className='m-2 p-2'>
         <Select onValueChange={(value: 'penelitian' | 'pengabdian') => setSelectedType(value)} defaultValue="penelitian">
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Select type" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="penelitian">Penelitian</SelectItem>
-            <SelectItem value="pengabdian">Pengabdian</SelectItem>
-          </SelectContent>
-        </Select>
-        <div className="flex items-center space-x-2">
-          <span>Show</span>
-          <Select defaultValue="10">
-            <SelectTrigger className="w-[70px]">
-              <SelectValue placeholder="Entries" />
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Select type" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="10">10</SelectItem>
-              <SelectItem value="25">25</SelectItem>
-              <SelectItem value="50">50</SelectItem>
+              <SelectItem value="penelitian">Penelitian</SelectItem>
+              <SelectItem value="pengabdian">Pengabdian</SelectItem>
             </SelectContent>
-          </Select>
-          <span>entries</span>
+        </Select>
+      </div>
+      <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
+        <h2 className="text-xl font-bold mb-4">Daftar Dosen - {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}</h2>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span>Show</span>
+            <Select defaultValue="10">
+              <SelectTrigger className="w-[70px]">
+                <SelectValue placeholder="Entries" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="10">10</SelectItem>
+                <SelectItem value="25">25</SelectItem>
+                <SelectItem value="50">50</SelectItem>
+              </SelectContent>
+            </Select>
+            <span>entries</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <span>Search:</span>
+            <Input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64"
+            />
+          </div>
         </div>
-        <div className="flex items-center space-x-2">
-          <span>Search:</span>
-          <Input
-            type="text"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-64"
-          />
+        <div className="flex justify-center" style={{ paddingRight: '100px' }}> {/* Added this line to center the chart */}
+          <LecturerStatsChart dashboardData={dashboardData} selectedType={selectedType} />
         </div>
+        {/* <LecturerStatsChart dashboardData={dashboardData} selectedType={selectedType} /> */}
       </div>
       <div className=''>
-      <LecturerStatsChart dashboardData={dashboardData} selectedType={selectedType} />
-      <TableContent filteredData={filteredData} />
+        <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
+          <h2 className="text-xl font-bold mb-4">Daftar {selectedType.charAt(0).toUpperCase() + selectedType.slice(1)}</h2>
+          <div className="flex justify-between items-center mb-4">
+            <div className="flex items-center space-x-2">
+              <span>Show</span>
+              <Select defaultValue="10">
+                <SelectTrigger className="w-[70px]">
+                  <SelectValue placeholder="Entries" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+              <span>entries</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <span>Search:</span>
+              <Input
+                type="text"
+                placeholder="Search..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64"
+              />
+            </div>
+          </div>
+          <TableContent filteredData={filteredData} />
+        </div>
       </div>
     </div>
   );

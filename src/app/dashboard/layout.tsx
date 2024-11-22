@@ -1,6 +1,15 @@
 import Sidebar from "@/components/sidebar";
+import { redirect } from 'next/navigation';
+import { auth } from '@/lib/auth';
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default async function Layout({ children }: { children: React.ReactNode }) {
+  const session = await auth();
+
+  // Redirect if the user is not authenticated
+  if (!session?.user) {
+    redirect('/');
+  }
+  
   return (
   <div className="flex h-screen">
     <div className="w-full flex-none md:w-64">
@@ -11,7 +20,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Top bar content goes here */}
         Top Bar
       </div>
-      <div className="flex-grow p-6 md:overflow-y-auto md:p-12">
+      <div className="flex-grow p-6 md:overflow-y-auto md:p-8">
         {children}
       </div>
     </div>

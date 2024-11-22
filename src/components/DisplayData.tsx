@@ -39,7 +39,6 @@ const chartConfig = {
     dataKeyInternational: string;
   }) {
     return (
-        <div className="">
         <Card className='flex-1 min-w-[300px] m-2'>
             <div className='flex p-5'>      
                 <div className='border-r border-solid border-black'>
@@ -74,8 +73,6 @@ const chartConfig = {
                 </div>
             </div>
         </Card>
-        </div>
-      
     );
   }
 
@@ -88,7 +85,7 @@ function DashboardCardDosen({ count }: { count: number }) {
                     </div>
                 </CardTitle>
                 <CardHeader>
-                    <div className="">
+                    <div className="md:pb-10">
                         {count}
                     </div>
                 </CardHeader>
@@ -116,7 +113,7 @@ export default function Dashboard() {
     return (
       <div className="p-4">
         <div className="flex flex-wrap -m-2">
-          <div className='flex flex-col'>
+          <div className='flex xl:flex-row md:flex-col'>
             <DashboardCardChart
                 title="Pengabdian"
                 body={dashboardData.totalPengabdian.toString()}
