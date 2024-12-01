@@ -21,6 +21,10 @@ type DashboardData = {
   totalPenelitian: number;
 };
 
+interface DashboardProps {
+  selectedYear: string;
+}
+
 const chartConfig = {
   nasional: {
     label: "Nasional",
@@ -98,7 +102,7 @@ function DashboardCardChart({ title, body, chartData, dataKeyNational, dataKeyIn
 //   );
 // }
 
-export default function Dashboard() {
+export default function Dashboard({ selectedYear }: DashboardProps) {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -109,8 +113,13 @@ export default function Dashboard() {
     async function fetchDashboardData() {
       try {
         setLoading(true);
-        const response = await fetch(`/api/dosen/${nidn}`);
+        // const response = await fetch(`/api/dosen/${nidn}?year=${selectedYear}`);
         // const response = await fetch(`/api/stats`);
+        const url = selectedYear === "all" 
+          ? `/api/dosen/${nidn}`
+          : `/api/dosen/${nidn}?year=${selectedYear}`;
+          
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -124,7 +133,7 @@ export default function Dashboard() {
     }
 
     fetchDashboardData();
-  }, [nidn]);
+  }, [nidn, selectedYear]);
 
   if (loading) {
     return <div>Loading...</div>;

@@ -1,8 +1,10 @@
 import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
-export async function GET() {
+export async function GET(request: Request, { params }: { params: { nama: string } }) {
   try {
+    const { searchParams } = new URL(request.url);
+    const yearFilter = searchParams.get('year');
     const currentYear = new Date().getFullYear();
     const startYear = 2019;
 
@@ -22,45 +24,102 @@ export async function GET() {
       },
     });
 
-    // Initialize data structure
-    const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
-    for (let year = startYear; year <= currentYear; year++) {
+    // // Initialize data structure
+    // const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
+    // for (let year = startYear; year <= currentYear; year++) {
+    //   yearlyStats[year] = {
+    //     pengabdianNasional: 0,
+    //     pengabdianInternasional: 0,
+    //     penelitianNasional: 0,
+    //     penelitianInternasional: 0,
+    //   };
+    // }
+
+    // // Aggregate pengabdian data
+    // pengabdianData.forEach(item => {
+    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
+    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
+    //     yearlyStats[item.tahun][category]++;
+    //   }
+    // });
+
+    // // Aggregate penelitian data
+    // penelitianData.forEach(item => {
+    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
+    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
+    //     yearlyStats[item.tahun][category]++;
+    //   }
+    // });
+
+    // // Format data for charts
+    // const formattedData = Object.entries(yearlyStats).map(([year, data]) => ({
+    //   year: parseInt(year),
+    //   ...data
+    // }));
+
+    // Initialize yearly stats
+    const yearlyStats: {
+      [key: number]: {
+        pengabdianNasional: number;
+        pengabdianInternasional: number;
+        penelitianNasional: number;
+        penelitianInternasional: number;
+      };
+    } = {};
+
+    // If year filter is applied, only create stats for that year
+    if (yearFilter) {
+      const year = parseInt(yearFilter);
       yearlyStats[year] = {
         pengabdianNasional: 0,
         pengabdianInternasional: 0,
         penelitianNasional: 0,
         penelitianInternasional: 0,
       };
+    } else {
+      // Create stats for all years in range
+      for (let year = startYear; year <= currentYear; year++) {
+        yearlyStats[year] = {
+          pengabdianNasional: 0,
+          pengabdianInternasional: 0,
+          penelitianNasional: 0,
+          penelitianInternasional: 0,
+        };
+      }
     }
 
     // Aggregate pengabdian data
     pengabdianData.forEach(item => {
-      if (item.tahun >= startYear && item.tahun <= currentYear) {
-        const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
+      if (yearlyStats[item.tahun]) {
+        const category = item.tingkat.toLowerCase() === 'internasional' 
+          ? 'pengabdianInternasional' 
+          : 'pengabdianNasional';
         yearlyStats[item.tahun][category]++;
       }
     });
 
     // Aggregate penelitian data
     penelitianData.forEach(item => {
-      if (item.tahun >= startYear && item.tahun <= currentYear) {
-        const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
+      if (yearlyStats[item.tahun]) {
+        const category = item.tingkat.toLowerCase() === 'internasional' 
+          ? 'penelitianInternasional' 
+          : 'penelitianNasional';
         yearlyStats[item.tahun][category]++;
       }
     });
 
     // Format data for charts
-    const formattedData = Object.entries(yearlyStats).map(([year, data]) => ({
+    const formattedYearlyStats = Object.entries(yearlyStats).map(([year, data]) => ({
       year: parseInt(year),
-      ...data
+      ...data,
     }));
 
     // Fetch total number of dosen
     const totalDosen = await prisma.dosen.count();
 
     return NextResponse.json({
-      yearlyStats: formattedData,
-      totalDosen,
+      yearlyStats: formattedYearlyStats,
+      totalDosen, 
       totalPengabdian: pengabdianData.length,
       totalPenelitian: penelitianData.length,
     });

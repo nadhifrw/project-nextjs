@@ -26,6 +26,9 @@ interface TableContentProps {
   filteredData: DataItem[];
   dosenNama: string;
 }
+interface TableProps {
+  selectedYear: string;
+}
 
 function TableContent({ filteredData, dosenNama }: TableContentProps) {
   return (
@@ -72,7 +75,7 @@ function TableContent({ filteredData, dosenNama }: TableContentProps) {
   );
 }
 
-function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
+function DataTable({ dataType, selectedYear }: { dataType: 'penelitian' | 'pengabdian', selectedYear: string }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [data, setData] = useState<DosenData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -83,7 +86,12 @@ function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await fetch(`/api/dosen/${nidn}`);
+        // const response = await fetch(`/api/dosen/${nidn}?year=${selectedYear} `);
+        const url = selectedYear === "all" 
+          ? `/api/dosen/${nidn}`
+          : `/api/dosen/${nidn}?year=${selectedYear}`;
+          
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }
@@ -98,7 +106,7 @@ function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
     if (nidn) {
       fetchData();
     }
-  }, [nidn]);
+  }, [nidn,  selectedYear]);
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
@@ -141,7 +149,7 @@ function DataTable({ dataType }: { dataType: 'penelitian' | 'pengabdian' }) {
   );
 }
 
-export default function Table() {
+export default function Table({ selectedYear }: TableProps) {
   const params = useParams();
   const nidn = params.nidn as string;
 
@@ -153,11 +161,11 @@ export default function Table() {
     <div className="space-y-8">
       <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
         <h2 className="text-2xl font-bold mb-4">Penelitian</h2>
-        <DataTable dataType="penelitian" />
+        <DataTable dataType="penelitian" selectedYear={selectedYear}/>
       </div>
       <div className='shadow-xl m-4 p-4 border border-solid rounded-md'>
         <h2 className="text-2xl font-bold mb-4">Pengabdian</h2>
-        <DataTable dataType="pengabdian" />
+        <DataTable dataType="pengabdian" selectedYear={selectedYear}/>
       </div>
     </div>
   );

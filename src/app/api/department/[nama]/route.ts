@@ -3,22 +3,32 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request, { params }: { params: { nama: string } }) {
   try {
-    const departmentName = decodeURIComponent(params.nama);
-
-    if (!departmentName) {
+    const { searchParams } = new URL(request.url);
+    const nama = params.nama;
+    const yearFilter = searchParams.get('year');
+    const currentYear = new Date().getFullYear();
+    const startYear = 2019;
+  
+    if (!nama) {
       return NextResponse.json({ error: 'Department name is required' }, { status: 400 });
     }
 
     const department = await prisma.department.findUnique({
-      where: { nama: departmentName },
+      where: { nama},
       include: {
         dosen: true,
         pengabdian: {
+          where: yearFilter ? {
+            tahun: parseInt(yearFilter)
+          } : undefined,
           include: {
             penulis: true,
           }
         },
         penelitian: {
+          where: yearFilter ? {
+            tahun: parseInt(yearFilter)
+          } : undefined,
           include: {
             penulis: true,
           }
@@ -30,31 +40,84 @@ export async function GET(request: Request, { params }: { params: { nama: string
       return NextResponse.json({ error: 'Department not found' }, { status: 404 });
     }
 
-    const currentYear = new Date().getFullYear();
-    const startYear = 2019;
-    const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
+    // for (let year = startYear; year <= currentYear; year++) {
+    //   yearlyStats[year] = {
+    //     pengabdianNasional: 0,
+    //     pengabdianInternasional: 0,
+    //     penelitianNasional: 0,
+    //     penelitianInternasional: 0,
+    //   };
+    // }
 
-    for (let year = startYear; year <= currentYear; year++) {
+    // // Aggregate pengabdian data
+    // department.pengabdian.forEach(item => {
+    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
+    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
+    //     yearlyStats[item.tahun][category]++;
+    //   }
+    // });
+
+    // // Aggregate penelitian data
+    // department.penelitian.forEach(item => {
+    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
+    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
+    //     yearlyStats[item.tahun][category]++;
+    //   }
+    // });
+
+    // // Format data for charts
+    // const formattedYearlyStats = Object.entries(yearlyStats).map(([year, data]) => ({
+    //   year: parseInt(year),
+    //   ...data,
+    // }));
+
+    // Initialize yearly stats
+    const yearlyStats: {
+      [key: number]: {
+        pengabdianNasional: number;
+        pengabdianInternasional: number;
+        penelitianNasional: number;
+        penelitianInternasional: number;
+      };
+    } = {};
+
+    // If year filter is applied, only create stats for that year
+    if (yearFilter) {
+      const year = parseInt(yearFilter);
       yearlyStats[year] = {
         pengabdianNasional: 0,
         pengabdianInternasional: 0,
         penelitianNasional: 0,
         penelitianInternasional: 0,
       };
+    } else {
+      // Create stats for all years in range
+      for (let year = startYear; year <= currentYear; year++) {
+        yearlyStats[year] = {
+          pengabdianNasional: 0,
+          pengabdianInternasional: 0,
+          penelitianNasional: 0,
+          penelitianInternasional: 0,
+        };
+      }
     }
 
     // Aggregate pengabdian data
     department.pengabdian.forEach(item => {
-      if (item.tahun >= startYear && item.tahun <= currentYear) {
-        const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
+      if (yearlyStats[item.tahun]) {
+        const category = item.tingkat.toLowerCase() === 'internasional' 
+          ? 'pengabdianInternasional' 
+          : 'pengabdianNasional';
         yearlyStats[item.tahun][category]++;
       }
     });
 
     // Aggregate penelitian data
     department.penelitian.forEach(item => {
-      if (item.tahun >= startYear && item.tahun <= currentYear) {
-        const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
+      if (yearlyStats[item.tahun]) {
+        const category = item.tingkat.toLowerCase() === 'internasional' 
+          ? 'penelitianInternasional' 
+          : 'penelitianNasional';
         yearlyStats[item.tahun][category]++;
       }
     });

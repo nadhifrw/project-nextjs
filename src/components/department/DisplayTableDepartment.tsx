@@ -1,7 +1,6 @@
 'use client';
 import React, { useState, useEffect } from 'react'
 import * as TableComponents from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -44,6 +43,10 @@ type DashboardData = {
   pengabdian: { data: DataItem[] };
   penelitian: { data: DataItem[] };
 };
+
+interface TableProps {
+  selectedYear: string;
+}
 
 const chartConfig = {
   nasional: {
@@ -105,7 +108,7 @@ function TableContent({ filteredData }: { filteredData: DataItem[] }) {
   );
 }
 
-function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: DashboardData; selectedType: 'penelitian' | 'pengabdian' }) {
+function LecturerStatsChart({ dashboardData, selectedType}: { dashboardData: DashboardData; selectedType: 'penelitian' | 'pengabdian' }) {
   const chartData = dashboardData.lecturerStats.map(stat => ({
     name: stat.name,
     national: stat[`${selectedType}Nasional`],
@@ -167,7 +170,7 @@ function LecturerStatsChart({ dashboardData, selectedType }: { dashboardData: Da
   );
 }
 
-export default function ResearchDashboard() {
+export default function ResearchDashboard({ selectedYear }: TableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedType, setSelectedType] = useState<'penelitian' | 'pengabdian'>('penelitian');
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
@@ -180,7 +183,12 @@ export default function ResearchDashboard() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch(`/api/department/${nama}`);
+        // const response = await fetch(`/api/department/${nama}`);
+        const url = selectedYear === "all" 
+        ? `/api/department/${nama}`
+        : `/api/department/${nama}?year=${selectedYear}`;
+            
+        const response = await fetch(url);
         if (!response.ok) {
           throw new Error('Failed to fetch data');
         }

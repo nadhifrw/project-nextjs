@@ -6,12 +6,71 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcrypt";
 import { signInSchema } from "./zod" 
 
+// export const { handlers, signIn, signOut, auth } = NextAuth({
+//   session: {
+//     strategy: "jwt",
+//   },
+//   pages: {
+//     signIn: '/page.tsx'
+//   },
+//   adapter: PrismaAdapter(prisma),
+//   providers: [
+//     Credentials({
+//       credentials: {
+//         username: { label: "Username", type: "text" },
+//         password: { label: "Password", type: "password" },
+//       },
+//       authorize: async (credentials) => {
+//         try {
+//           console.log("Attempting to authorize user");
+//           const { username, password } = await signInSchema.parseAsync(credentials);
+//           console.log("Credentials parsed successfully");
+          
+//           const existingUser = await prisma.user.findUnique({
+//             where: { username },
+//           });
+//           console.log("User lookup complete", existingUser ? "User found" : "User not found");
+      
+//           if (!existingUser || !existingUser.password) {
+//             console.log("User not found or password not set");
+//             return null;
+//           }
+      
+//           console.log("Comparing passwords");
+//           const passwordCorrect = await bcrypt.compare(
+//             password,
+//             existingUser.password
+//           );
+//           console.log("Password comparison result:", passwordCorrect);
+      
+//           if (!passwordCorrect) {
+//             console.log("Incorrect password");
+//             return null;
+//           }
+      
+//           console.log("Authorization successful");
+//           return { id: existingUser.id, username: existingUser.username };
+//         } catch (error) {
+//           if (error instanceof ZodError) {
+//             // Return `null` to indicate that the credentials are invalid
+//             return null;
+//           }
+//           // Re-throw the error to handle it globally if necessary
+//           throw error;
+//         }
+//       },
+//     }),
+//   ],
+// });
+
+
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
-    strategy: "jwt",
+    strategy: "jwt",  // Using JWT strategy for session
+    maxAge: 30 * 60,  // Set session max age to 30 minutes (in seconds)
   },
   pages: {
-    signIn: '/page.tsx'
+    signIn: '/page.tsx',  // Custom sign-in page
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -23,39 +82,48 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       authorize: async (credentials) => {
         try {
           console.log("Attempting to authorize user");
+
+          // Parse and validate credentials
           const { username, password } = await signInSchema.parseAsync(credentials);
           console.log("Credentials parsed successfully");
-          
+
+          // Find the user by username
           const existingUser = await prisma.user.findUnique({
             where: { username },
           });
           console.log("User lookup complete", existingUser ? "User found" : "User not found");
-      
+
+          // If user doesn't exist or doesn't have a password, return null
           if (!existingUser || !existingUser.password) {
             console.log("User not found or password not set");
             return null;
           }
-      
+
+          // Compare the password with the stored hash
           console.log("Comparing passwords");
-          const passwordCorrect = await bcrypt.compare(
-            password,
-            existingUser.password
-          );
+          const passwordCorrect = await bcrypt.compare(password, existingUser.password);
           console.log("Password comparison result:", passwordCorrect);
-      
+
           if (!passwordCorrect) {
             console.log("Incorrect password");
             return null;
           }
-      
+
           console.log("Authorization successful");
-          return { id: existingUser.id, username: existingUser.username };
+
+          // Return user object (with more details like email)
+          return {
+            id: existingUser.id,
+            username: existingUser.username,
+          };
         } catch (error) {
+          // If the error is related to Zod validation, return null
           if (error instanceof ZodError) {
-            // Return `null` to indicate that the credentials are invalid
+            console.error("Zod validation error:", error.errors);
             return null;
           }
-          // Re-throw the error to handle it globally if necessary
+          
+          // If there's any other error, re-throw it
           throw error;
         }
       },

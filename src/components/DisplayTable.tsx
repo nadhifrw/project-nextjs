@@ -16,22 +16,45 @@ type Department = {
     penelitian: number;
   };
 };
-
 interface DepartmentTableProps {
   departments: Department[];
 }
+interface DashboardProps {
+  selectedYear: string;
+}
 
-export function TableDepartment({ departments }: DepartmentTableProps ) {
+export function TableDepartment({ departments, selectedYear }: DepartmentTableProps & DashboardProps ) {
   const [searchTerm, setSearchTerm] = useState('');
-  // const [isLoading, setIsLoading] = useState(true);
+  const [departmentData, setDepartmentData] = useState<Department | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const filteredData = departments.filter(item =>
     item.nama.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // if (isLoading) {
-  //   return <div>Loading...</div>;
-  // }
+  useEffect(() => {
+    async function fetchDashboardData() {
+      try {
+        setLoading(true);
+        const url = selectedYear === "all" 
+          ? `/api/stats`
+          : `/api/stats?year=${selectedYear}`;
+          
+        const response = await fetch(url);
+        const data: Department = await response.json();
+        setDepartmentData(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchDashboardData();
+  }, [selectedYear]);
+  
+  if (loading) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div className="w-full">

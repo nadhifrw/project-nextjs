@@ -169,19 +169,22 @@ import { ChartConfig, ChartContainer, ChartLegend, ChartLegendContent, ChartTool
 import { useParams } from 'next/navigation';
 
 type ChartData = {
-    year: number;
-    pengabdianNasional: number;
-    pengabdianInternasional: number;
-    penelitianNasional: number;
-    penelitianInternasional: number;
-  };
+  year: number;
+  pengabdianNasional: number;
+  pengabdianInternasional: number;
+  penelitianNasional: number;
+  penelitianInternasional: number;
+};
   
-  type DashboardData = {
-    yearlyStats: ChartData[];
-    totalDosen: number;
-    totalPengabdian: number;
-    totalPenelitian: number;
-  };
+type DashboardData = {
+  yearlyStats: ChartData[];
+  totalDosen: number;
+  totalPengabdian: number;
+  totalPenelitian: number;
+};
+interface DashboardProps {
+  selectedYear: string;
+}
 
 const chartConfig = {
     nasional: {
@@ -256,7 +259,7 @@ function DashboardCardDosen({ count }: { count: number }) {
     );
 }
 
-export default function Dashboard() {
+export default function Dashboard({ selectedYear }: DashboardProps) {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -267,8 +270,13 @@ export default function Dashboard() {
       async function fetchDashboardData() {
         try {
           setLoading(true);
-          const response = await fetch(`/api/department/${nama}`);
+          // const response = await fetch(`/api/department/${nama}`);
           // const response = await fetch(`/api/stats`);
+          const url = selectedYear === "all" 
+          ? `/api/department/${nama}`
+          : `/api/department/${nama}?year=${selectedYear}`;
+            
+          const response = await fetch(url);
           if (!response.ok) {
             throw new Error('Failed to fetch data');
           }
@@ -282,7 +290,7 @@ export default function Dashboard() {
       }
 
       fetchDashboardData();
-    }, [nama]);
+    }, [nama, selectedYear]);
 
     if (loading) {
       return <div>Loading...</div>;
