@@ -25,14 +25,14 @@ interface DashboardClientProps {
 
 export default function DashboardClient({ initialDepartments }: DashboardClientProps) {
   const [selectedYear, setSelectedYear] = useState<string | "all">("all");
-  const years = ["all", "2019", "2020", "2021", "2022", "2023", "2024"];
-
+  const startYear = 2019;
+  const years = ["all", ...Array.from({ length: new Date().getFullYear() - startYear + 1 }, (_, i) => (startYear + i).toString())];
   const handleYearChange = (year: string) => {
     setSelectedYear(year);
   };
 
   return (
-    <main>
+    <main className=''>
       <div className=''>
         <div className='flex items-center justify-between px-4 py-2'>
           <div className='flex flex-row m-4'>

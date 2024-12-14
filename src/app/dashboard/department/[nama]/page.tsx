@@ -1,3 +1,4 @@
+//src/app/dashboard/department/[nama]/page.tsx
 'use client';
 
 import { useParams } from 'next/navigation';
@@ -20,7 +21,8 @@ type Department = {
 
 export default function DepartmentDetailPage() {
   const [selectedYear, setSelectedYear] = useState<string | "all">("all");
-  const years = ["all", "2019", "2020", "2021", "2022", "2023", "2024"];
+  const startYear = 2019;
+  const years = ["all", ...Array.from({ length: new Date().getFullYear() - startYear + 1 }, (_, i) => (startYear + i).toString())];
   const [department, setDepartment] = useState<Department | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -65,7 +67,7 @@ export default function DepartmentDetailPage() {
     <div className="container mx-auto">
       <div className="flex items-center justify-between px-4 py-2">
         <div>
-          <Link href={'/dashboard/dosen'}>
+          <Link href={'/dashboard/'}>
             <button className='flex flex-row items-center'>
               <svg 
                 xmlns="http://www.w3.org/2000/svg" 

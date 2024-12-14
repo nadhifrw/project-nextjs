@@ -15,7 +15,6 @@ type Dosen = {
 export default function Page() {
     const [data, setData] = useState<Dosen[]>([]);
 
-    // Fetching data from Prisma (you might do this in an API route instead)
     useEffect(() => {
         async function fetchData() {
         const res = await fetch('/api/dosen');

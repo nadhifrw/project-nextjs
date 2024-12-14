@@ -33,39 +33,6 @@ export async function GET(
     }
 
     // Initialize yearly stats
-    // const yearlyStats: { [key: number]: { pengabdianNasional: number; pengabdianInternasional: number; penelitianNasional: number; penelitianInternasional: number } } = {};
-    // for (let year = startYear; year <= currentYear; year++) {
-    //   yearlyStats[year] = {
-    //     pengabdianNasional: 0,
-    //     pengabdianInternasional: 0,
-    //     penelitianNasional: 0,
-    //     penelitianInternasional: 0,
-    //   };
-    // }
-
-    // // Aggregate pengabdian data
-    // dosen.pengabdian.forEach(item => {
-    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
-    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'pengabdianInternasional' : 'pengabdianNasional';
-    //     yearlyStats[item.tahun][category]++;
-    //   }
-    // });
-
-    // // Aggregate penelitian data
-    // dosen.penelitian.forEach(item => {
-    //   if (item.tahun >= startYear && item.tahun <= currentYear) {
-    //     const category = item.tingkat.toLowerCase() === 'internasional' ? 'penelitianInternasional' : 'penelitianNasional';
-    //     yearlyStats[item.tahun][category]++;
-    //   }
-    // });
-
-    // // Format data for charts
-    // const formattedYearlyStats = Object.entries(yearlyStats).map(([year, data]) => ({
-    //   year: parseInt(year),
-    //   ...data,
-    // }));
-
-    // Initialize yearly stats
     const yearlyStats: {
       [key: number]: {
         pengabdianNasional: number;

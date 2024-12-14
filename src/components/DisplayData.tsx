@@ -146,7 +146,7 @@ export default function Dashboard({ selectedYear }: DashboardProps) {
                 title="Pengabdian"
                 body={totalPengabdian.toString()}
                 // body={dashboardData.yearlyStats.toString()}
-                chartData={filteredData}
+                chartData={dashboardData.yearlyStats}
                 dataKeyNational="pengabdianNasional"
                 dataKeyInternational="pengabdianInternasional"
               />

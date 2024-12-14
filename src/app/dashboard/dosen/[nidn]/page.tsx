@@ -1,3 +1,4 @@
+//src/app/dashboard/dosen/%5Bnidn%5D/page.tsx
 'use client';
 
 import { notFound, useParams } from 'next/navigation';
@@ -36,7 +37,8 @@ type Dosen = {
 
 export default function DosenDetailPage() {
   const [selectedYear, setSelectedYear] = useState<string | "all">("all");
-  const years = ["all", "2019", "2020", "2021", "2022", "2023", "2024"];
+  const startYear = 2019;
+  const years = ["all", ...Array.from({ length: new Date().getFullYear() - startYear + 1 }, (_, i) => (startYear + i).toString())];
   const [data, setDosen] = useState<Dosen | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +53,6 @@ export default function DosenDetailPage() {
     async function fetchDosenData() {
       setIsLoading(true);
       try {
-        // Only add year parameter if a specific year is selected
         const url = selectedYear === "all" 
           ? `/api/dosen/${nidn}`
           : `/api/dosen/${nidn}?year=${selectedYear}`;
